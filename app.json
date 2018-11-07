@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "sdkVersion": "27.0.0",
+    "icon": "./assets/nblogo.png",
+    "slug": "threeriders",
+    "loading": {
+      "hideExponentText": true,
+      "backgroundImage": "./assets/splashscreen.png"
+    },
+    "orientation": "portrait",
+    "primaryColor": "#000000",
+    "packagerOpts": {
+      "assetExts": [
+        "ttf"
+      ]
+    },
+    "androidStatusBarColor": "#000000",
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#000000"
+    },
+    "privacy": "public"
+  }
+}
