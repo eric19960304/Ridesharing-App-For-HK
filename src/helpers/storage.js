@@ -1,11 +1,11 @@
 import { AsyncStorage } from "react-native"
 
 const storeToPersistent = async (key, value) => {
-    return await AsyncStorage.setItem(key, value);
+    return await AsyncStorage.setItem(key, JSON.stringify(value));
 }
 
 const getFromPersistent = async (key) => {
-    return await AsyncStorage.getItem(key) || null;
+    return JSON.parse(await AsyncStorage.getItem(key) || null);
 }
 
 const removeFromPersistent = async (key) => {
@@ -39,7 +39,7 @@ export default class StorageManager {
     }
 
     setUser(user) {
-        this._user = JSON.stringify(user);
+        this._user = user;
         storeToPersistent('user', this._user)
         .then(()=>{})
         .catch(e=>{
@@ -59,7 +59,7 @@ export default class StorageManager {
     async loadDataFromPersistance(){
         try{
             const user = await getFromPersistent('user');
-            this._user = JSON.parse(user);
+            this._user = user;
             return true;
         }catch(e){
             console.log(e);
