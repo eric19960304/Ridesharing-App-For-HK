@@ -1,4 +1,4 @@
-**HKUCS FYP Ridesharing App
+**HKUCS FYP Ridesharing App**
 
 Back-end server repo: https://github.com/eric19960304/FYP-Server
 
@@ -20,7 +20,7 @@ Run:
 
 
 -----------------------
-**Something about Javascript (>ES7)
+**Something about Javascript (>ES7)**
 
 use const/let instead of var (though var is still available)
 
