@@ -5,7 +5,7 @@ import { Container, Button, H2, Text, Spinner } from "native-base";
 import styles from "./styles";
 import helpers from "../../helpers";
 
-const { storage } = helpers;
+const storageManager = helpers.StorageManager.getInstance();
 const launchscreenBg = require("../../../assets/launchscreen-bg.png");
 const launchscreenLogo = require("../../../assets/logo-threeriders.png");
 
@@ -14,45 +14,12 @@ class WelcomePage extends Component {
   constructor(props){
     super(props);
 
-    this.state = {
-      loading: true,
-      user: null
-    };
-  }
-
-  async componentWillMount(){
-    return await this.getUserDataFromStorage();
-  }
-  
-  async getUserDataFromStorage(){
-    let user = null;
-    try{
-      user = JSON.parse(await storage.get('user'));
-    }catch(e){
-      console.log(e);
-    }
-    console.log(
-      'welcomepage: ',
-      user
-    );
-    this.setState({
-      loading: false,
-      user
-    });
   }
 
   render() {
 
-    const {loading, user} = this.state;
-
-    if(loading){
-      return (
-        <Container>
-          <StatusBar barStyle="light-content" />
-          <Spinner color="blue" />
-        </Container>
-      );
-    }
+    const user = storageManager.getUser();
+    console.log('welcomePage: ', user);
     
     return (
       <Container>

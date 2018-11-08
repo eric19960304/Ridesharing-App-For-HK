@@ -7,7 +7,8 @@ import styles from "./styles";
 
 import helpers from "../../helpers";
 
-const { auth, storage } = helpers;
+const { auth, StorageManager } = helpers;
+const storageManager = StorageManager.getInstance();
 
 class SignupPage extends Component {
 
@@ -132,22 +133,22 @@ class SignupPage extends Component {
       
       if(result.isSuccess === true){
 
-        const user = {
-          email
+        let user = {
+          email,
+          jwt: result.jwt
         }
 
-        await storage.store('user', JSON.stringify(user));
-        await storage.store('jwt',  result.jwt);
+        storageManager.setUser(user);
 
         Toast.show({
-          text: "Login successful!",
+          text: "Signup successful!",
           textStyle: { textAlign: 'center' },
           type: "success",
           position: "top",
           duration: 3000
         });
 
-        this.props.navigation.navigate('Search');
+        this.props.navigation.navigate('WelcomePage');
 
       }else{
         Toast.show({
