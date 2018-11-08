@@ -18,7 +18,7 @@ const drawerImage = require("../../../assets/logo-threeriders.png");
 const datas = [
   // avalible icon list: https://fontawesome.com/
   {
-    name: "Search",
+    name: "Find Ride",
     route: "Search",
     icon: "map-marker",
     bg: "#C5F442"
