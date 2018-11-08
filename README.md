@@ -46,6 +46,11 @@ function printInt(n){
 
 // new way
 const add = (a,b) => a+b;
+or
+const add = (a,b) => { 
+  const sum = a+b;
+  return sum;
+};
 const printInt = n => { console.log(n); };
 ```
 
