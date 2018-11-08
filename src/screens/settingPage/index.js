@@ -7,6 +7,8 @@ import {
 import styles from "./styles";
 import helpers from "../../helpers";
 
+const storageManager = helpers.StorageManager.getInstance();
+
 class SettingPage extends Component {
 
   constructor(props){
@@ -56,25 +58,17 @@ class SettingPage extends Component {
     );
   }
 
-  async onLogout(){
-      await helpers.storage.remove('user').then( ()=>{
-        Toast.show({
-          text: "Logout Successful.",
-          textStyle: { textAlign: 'center' },
-          type: "success",
-          duration: 3000,
-          position: "top"
-        });
-        this.props.navigation.navigate('WelcomePage');
-      })
-      .catch( (e)=>{
-      Toast.show({
-        text: 'something go wrong, please try again later!',
-        textStyle: { textAlign: 'center' },
-        type: "danger",
-        position: "top",
-      });
-    })
+  onLogout(){
+    storageManager.removeUser();
+    Toast.show({
+      text: "Logout Successful.",
+      textStyle: { textAlign: 'center' },
+      type: "success",
+      duration: 3000,
+      position: "top"
+    });
+    this.props.navigation.navigate('WelcomePage');
+    
   }
 }
 
