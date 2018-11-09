@@ -1,5 +1,5 @@
 import auth from "./auth";
-import StorageManager from "./storage";
+import StorageManager from "./storageManager";
 
 export default {
     auth,

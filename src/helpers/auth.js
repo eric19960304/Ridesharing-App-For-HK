@@ -1,6 +1,9 @@
 import config from "../../config";
+import StorageManager from "./storageManager";
 
-const loginSignupCommon = async(email, password, url) => {
+const storageManager = StorageManager.getInstance();
+
+const loginSignupCommon = async(email, password, url, successMessage) => {
     const defaultMessage = 'something go wrong, please try again later!';
     let responseJson = null;
     try{
@@ -21,9 +24,17 @@ const loginSignupCommon = async(email, password, url) => {
     }
     
     if(responseJson.jwt){
+
+        const user = {
+            email,
+            jwt: responseJson.jwt
+        }
+          
+        storageManager.setUser(user);
+
         return {
             isSuccess: true,
-            jwt: responseJson.jwt
+            message: successMessage
         }
     }
 
@@ -35,8 +46,9 @@ const loginSignupCommon = async(email, password, url) => {
 
 const login = async(email, password) => {
     const url = config.serverURL + '/user/login';
+    const successMessage = "Login successful!";
     try{
-        return await loginSignupCommon(email, password, url);
+        return await loginSignupCommon(email, password, url, successMessage);
     }catch(e){
         console.log(e);
     }
@@ -45,8 +57,9 @@ const login = async(email, password) => {
 
 const signup = async(email, password) => {
     const url = config.serverURL + '/user/signup';
+    const successMessage = "Signup successful!";
     try{
-        return await loginSignupCommon(email, password, url);
+        return await loginSignupCommon(email, password, url, successMessage);
     }catch(e){
         console.log(e);
     }

@@ -5,10 +5,9 @@ import {
 } from "native-base";
 import styles from "./styles";
 
-import helpers from "../../helpers";
+import auth from "../../helpers/auth";
 
-const { auth, StorageManager } = helpers;
-const storageManager = StorageManager.getInstance();
+
 
 class SignupPage extends Component {
 
@@ -103,7 +102,7 @@ class SignupPage extends Component {
 
     if(confirmPassword.length === 0){
       Toast.show({
-        text: "Please enter your password again.",
+        text: "Password not match, please check again.",
         textStyle: { textAlign: 'center' },
         type: "warning",
         position: "top"
@@ -133,15 +132,8 @@ class SignupPage extends Component {
       
       if(result.isSuccess === true){
 
-        let user = {
-          email,
-          jwt: result.jwt
-        }
-
-        storageManager.setUser(user);
-
         Toast.show({
-          text: "Signup successful!",
+          text: result.message,
           textStyle: { textAlign: 'center' },
           type: "success",
           position: "top",

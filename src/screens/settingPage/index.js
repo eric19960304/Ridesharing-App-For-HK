@@ -5,9 +5,9 @@ import {
 } from "native-base";
 
 import styles from "./styles";
-import helpers from "../../helpers";
+import StorageManager from "../../helpers/storageManager";
 
-const storageManager = helpers.StorageManager.getInstance();
+const storageManager = StorageManager.getInstance();
 
 class SettingPage extends Component {
 

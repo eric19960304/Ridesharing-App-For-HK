@@ -5,7 +5,7 @@ import { StyleProvider } from "native-base";
 import App from "../App";
 import getTheme from "../theme/components";
 import variables from "../theme/variables/commonColor";
-import StorageManager from "../helpers/storage";
+import StorageManager from "../helpers/storageManager";
 
 export default class Setup extends Component {
   constructor() {

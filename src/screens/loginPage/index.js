@@ -5,10 +5,8 @@ import {
 } from "native-base";
 import styles from "./styles";
 
-import helpers from "../../helpers";
+import auth from "../../helpers/auth";
 
-const {auth, StorageManager} = helpers;
-const storageManager = StorageManager.getInstance();
 
 class LoginPage extends Component {
 
@@ -102,15 +100,8 @@ class LoginPage extends Component {
       
       if(result.isSuccess === true){
 
-        let user = {
-          email,
-          jwt: result.jwt
-        }
-        
-        storageManager.setUser(user);
-
         Toast.show({
-          text: "Login successful!",
+          text: result.message,
           textStyle: { textAlign: 'center' },
           type: "success",
           position: "top",
