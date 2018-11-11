@@ -1,47 +1,42 @@
 import config from "../../config";
 import StorageManager from "./storageManager";
+import creator from "./creator";
+import networkClient from "./networkClient";
 
 const storageManager = StorageManager.getInstance();
 
 const loginSignupCommon = async(email, password, url, successMessage) => {
-    const defaultMessage = 'something go wrong, please try again later!';
-    let responseJson = null;
-    try{
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email.toLowerCase(),
-                password
-            }),
-        });
-        responseJson = await response.json();
-    }catch(e){
-        console.log(e);
-    }
-    
-    if(responseJson.jwt){
+    let result = {
+        isSuccess: false,
+        message: 'something go wrong, please try again later!'
+    };
 
-        const user = {
+    const body = {
+        email: email.toLowerCase(),
+        password
+    };
+    const response = await networkClient.POST(url, body);
+    if(response.jwt){
+
+        const user = creator.createUser({
             email,
-            jwt: responseJson.jwt
-        }
-          
-        storageManager.setUser(user);
+        });
 
-        return {
+        storageManager.set('user', user);
+        storageManager.set('jwt', response.jwt);
+
+        result = {
             isSuccess: true,
             message: successMessage
-        }
+        };
+    }else if(response.message){
+        result = {
+            isSuccess: false,
+            message: response.message
+        };
     }
 
-    return {
-        isSuccess: false,
-        message: responseJson.message || defaultMessage
-    }
+    return result;
 }
 
 const login = async(email, password) => {

@@ -18,7 +18,7 @@ class WelcomePage extends Component {
 
   render() {
 
-    const user = storageManager.getUser();
+    const user = storageManager.get('user');
     console.log('welcomePage: ', user);
     
     return (

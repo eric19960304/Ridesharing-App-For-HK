@@ -24,7 +24,7 @@ export default class Setup extends Component {
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
     });
     let storageManager = StorageManager.getInstance();
-    await storageManager.loadDataFromPersistance();
+    await storageManager.loadAllDataFromPersistance();
     this.setState({ isReady: true });
   }
   render() {

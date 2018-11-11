@@ -59,7 +59,9 @@ class SettingPage extends Component {
   }
 
   onLogout(){
-    storageManager.removeUser();
+    storageManager.remove('user');
+    storageManager.remove('jwt');
+    
     Toast.show({
       text: "Logout Successful.",
       textStyle: { textAlign: 'center' },

@@ -5,19 +5,27 @@ const storeToPersistent = async (key, value) => {
 }
 
 const getFromPersistent = async (key) => {
-    return JSON.parse(await AsyncStorage.getItem(key) || null);
+    const obj = await AsyncStorage.getItem(key);
+    if(obj){
+        return JSON.parse(obj);
+    }else{
+        return null;
+    }
 }
 
 const removeFromPersistent = async (key) => {
     return await AsyncStorage.removeItem(key);
 }
 
+
+const keyList = ['user', 'jwt'];
 export default class StorageManager {
     /* Singleton storage  */
     static instance = null;
 
-    /* data */
-    _user = null;
+    /* private data */
+    user = null;
+    jwt = null;
 
     /**
      * @returns {StorageManager}
@@ -30,40 +38,64 @@ export default class StorageManager {
         return this.instance;
     }
 
-    isUserExist(){
-        return _user !== null;
-    }
-
-    getUser() {
-        return this._user;
-    }
-
-    setUser(user) {
-        this._user = user;
-        storeToPersistent('user', this._user)
+    store(key, obj){
+        this[key] = obj;
+        storeToPersistent(key, obj)
         .then(()=>{})
         .catch(e=>{
             console.log(e);
         });
     }
 
-    removeUser(){
-        this._user = null;
-        removeFromPersistent('user')
-        .then(()=>{})
-        .catch(e=>{
-            console.log(e);
-        });
-    }
-
-    async loadDataFromPersistance(){
+    async loadDataFromPersistance(key){
         try{
-            const user = await getFromPersistent('user');
-            this._user = user;
+            const obj = await getFromPersistent(key);
+            this[key] = obj;
             return true;
         }catch(e){
             console.log(e);
             return false;
         }
     }
+
+    async loadAllDataFromPersistance(){
+        for(key in keyList){
+            await this.loadDataFromPersistance(key);
+        }
+        return true;
+    }
+
+    isExist(key){
+        return this[key] !== null;
+    }
+
+    get(key) {
+        // clone a new object instead of return the reference!
+        if(this[key]){
+            return Object.assign({}, this[key]);
+        }else{
+            return this[key];
+        }
+    }
+
+    set(key, obj) {
+        this.store(key, obj);
+    }
+
+    update(key, obj) {
+        /* update partial fields only */
+        const currentObj = this.get(key);
+        const newObj = Object.assign(currentObj, obj);
+        this.store(key, newObj);
+    }
+
+    remove(key){
+        this[key] = null;
+        removeFromPersistent(key)
+        .then(()=>{})
+        .catch(e=>{
+            console.log(e);
+        });
+    }
+
 }
