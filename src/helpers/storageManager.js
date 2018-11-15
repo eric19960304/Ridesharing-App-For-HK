@@ -4,7 +4,7 @@ const storeToPersistent = async (key, value) => {
     return await AsyncStorage.setItem(key, JSON.stringify(value));
 }
 
-const getFromPersistent = async (key) => {
+const getFromPersistence = async (key) => {
     const obj = await AsyncStorage.getItem(key);
     if(obj){
         return JSON.parse(obj);
@@ -47,9 +47,9 @@ export default class StorageManager {
         });
     }
 
-    async loadDataFromPersistance(key){
+    async loadDataFromPersistence(key){
         try{
-            const obj = await getFromPersistent(key);
+            const obj = await getFromPersistence(key);
             this[key] = obj;
             return true;
         }catch(e){
@@ -58,9 +58,9 @@ export default class StorageManager {
         }
     }
 
-    async loadAllDataFromPersistance(){
+    async loadAllDataFromPersistence(){
         for(key in keyList){
-            await this.loadDataFromPersistance(key);
+            await this.loadDataFromPersistence(key);
         }
         return true;
     }
