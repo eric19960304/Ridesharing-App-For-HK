@@ -30,11 +30,11 @@ class WelcomePage extends Component {
           </View>
           
           {user ?
-          <View>
+          <View style={styles.contentContainer}>
             <View style={styles.titleContainer}>
               <H2 style={styles.text}>Hello {user.email.split('@')[0]}!</H2>
             </View>
-            <View style={styles.contentContainer}>
+            <View style={styles.buttonGroup}>
                 <Button
                   style={styles.goRideButton}
                   onPress={() => this.props.navigation.navigate('Search')}
@@ -44,12 +44,12 @@ class WelcomePage extends Component {
             </View>
           </View>
           :
-          <View>
+          <View style={styles.contentContainer}>
             <View  style={styles.titleContainer}>
               <H2 style={styles.text}>An Easy-to-use</H2>
               <H2 style={styles.text}>Ridesharing App for Hong Kong</H2>
             </View>
-            <View style={styles.contentContainer} >
+            <View style={styles.buttonGroup} >
               <Button
                 style={styles.loginButton}
                 onPress={() => this.props.navigation.navigate('LoginPage')}
