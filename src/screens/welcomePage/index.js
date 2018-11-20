@@ -47,7 +47,7 @@ class WelcomePage extends Component {
           <View>
             <View  style={styles.titleContainer}>
               <H2 style={styles.text}>An Easy-to-use</H2>
-              <H2 style={styles.text}>Ridesharing App for HK</H2>
+              <H2 style={styles.text}>Ridesharing App for Hong Kong</H2>
             </View>
             <View style={styles.contentContainer} >
               <Button
