@@ -15,8 +15,8 @@ export default {
   },
   logo: {
     position: "absolute",
-    left: Platform.OS === "android" ? 60 : 70,
-    top: Platform.OS === "android" ? 35 : 60,
+    left: Platform.OS === "android" ? 180 : 70,
+    top: Platform.OS === "android" ? 50 : 60,
     width: 241,
     height: 130
   },
@@ -38,11 +38,12 @@ export default {
   },
   loginButton: {
     backgroundColor: "#6FAF98",
-    marginLeft: 100
+    marginLeft: Platform.OS === "android" ? 200 : 100
   },
   signupButton: {
     backgroundColor: "#6FAF98",
-    marginLeft: 30
+    marginLeft: Platform.OS === "android" ? 50 : 30,
+    
   },
   goRideButton: {
     backgroundColor: "#6FAF98",
