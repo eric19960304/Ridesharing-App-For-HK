@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Keyboard } from 'react-native'
 import {
   Container, Header, Title, Content, Button, Item, 
   Label, Input, Body, Left, Right, Icon, Form, Text, Toast
@@ -44,12 +45,13 @@ class SignupPage extends Component {
         <Content>
           <Form>
             <Item floatingLabel>
-              <Label>Email</Label>
+              <Label style={styles.label}>Email</Label>
               <Input 
                 value={email} 
                 onChangeText={(email) => this.setState({email})}/>
             </Item>
             <Item floatingLabel>
+
               <Label>User Name</Label>
               <Input 
                 value={userName} 
@@ -57,6 +59,8 @@ class SignupPage extends Component {
             </Item>
             <Item floatingLabel>
               <Label>Password</Label>
+              <Label style={styles.label}>Password</Label>
+
               <Input 
                 secureTextEntry 
                 value={password} 
@@ -64,7 +68,7 @@ class SignupPage extends Component {
               />
             </Item>
             <Item floatingLabel last>
-              <Label>Confirm Password</Label>
+              <Label style={styles.label}>Confirm Password</Label>
               <Input 
                 secureTextEntry 
                 value={confirmPassword} 
@@ -75,7 +79,7 @@ class SignupPage extends Component {
 
           <Button 
             block 
-            style={{ margin: 15, marginTop: 50 }} 
+            style={styles.signupButton}
             onPress={this.onFormSubmit}>
             <Text>Sign Up</Text>
           </Button>
@@ -156,6 +160,7 @@ class SignupPage extends Component {
           duration: 3000
         });
 
+        Keyboard.dismiss();
         this.props.navigation.navigate('WelcomePage');
 
       }else{

@@ -4,6 +4,7 @@ const deviceHeight = Dimensions.get("window").height;
 
 export default {
   imageContainer: {
+    alignItems: "center",
     flex: 1,
     width: null,
     height: null
@@ -14,9 +15,6 @@ export default {
     marginBottom: 30
   },
   logo: {
-    position: "absolute",
-    left: Platform.OS === "android" ? 60 : 70,
-    top: Platform.OS === "android" ? 35 : 60,
     width: 241,
     height: 130
   },
@@ -33,19 +31,22 @@ export default {
     marginTop: 8
   },
   contentContainer: { 
-    marginBottom: 80, 
-    flexDirection: "row" 
+    flexDirection: "column", 
+    alignItems: "center"
+  },
+  buttonGroup: { 
+    marginBottom: 80,
+    flexDirection: "row",
+    alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "#6FAF98",
-    marginLeft: 100
+    backgroundColor: "#6FAF98"
   },
   signupButton: {
     backgroundColor: "#6FAF98",
     marginLeft: 30
   },
   goRideButton: {
-    backgroundColor: "#6FAF98",
-    marginLeft: 145
+    backgroundColor: "#6FAF98"
   }
 };
