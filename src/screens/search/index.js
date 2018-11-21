@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   View,
   Dimensions,
-  InteractionManager,
+  InteractionManager
 } from 'react-native';
 import {
   Container,
@@ -19,8 +19,10 @@ import {
   Body
 } from "native-base";
 
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
+import MapViewDirections from 'react-native-maps-directions';
 import styles from './styles';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -37,6 +39,11 @@ const IMAGE_URL1 = 'https://i.kym-cdn.com/entries/icons/mobile/000/013/564/doge.
 const OVERLAY_TOP_LEFT_COORDINATE2 = [35.67737855391474, 139.76531982421875];
 const OVERLAY_BOTTOM_RIGHT_COORDINATE2 = [35.67514743608467, 139.76806640625];
 const IMAGE_URL2 = 'https://i.ytimg.com/vi/Doxj7ACZSe4/hqdefault.jpg';
+let id = 0;
+
+function randomColor() {
+  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+}
 
 class Search extends Component {
 
@@ -59,7 +66,12 @@ class Search extends Component {
         image: IMAGE_URL2,
       },
       loading: true,
+      markers: []
     };
+
+    this.mapView = null;
+
+    this.resetMarker = this.resetMarker.bind(this);
   }
 
   componentDidMount() {
@@ -68,18 +80,40 @@ class Search extends Component {
     });
   }
 
+  onMapPress(e) {
+    if(this.state.markers.length <= 1){
+      this.setState({
+        markers: [
+          ...this.state.markers,
+          {
+            coordinate: e.nativeEvent.coordinate,
+            key: id++,
+            color: randomColor(),
+          },
+        ],
+      });
+    }
+  }
+
+  resetMarker(){
+    this.setState({ markers: [] });
+    id = 0;
+  }
+
   render() {
 
     const { width, height } = Dimensions.get('window');
     const ratio = width / height;
 
-    const coordinates = {
-      latitude: 37.78825,
-      longitude: -122.4324,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0922 * ratio,
-    };
+    const GOOGLE_MAPS_APIKEY = 'AIzaSyDaR4PaEfbySA5bRP243KwFk9qtSbDVntQ';
+    //const GOOGLE_MAPS_APIKEY = 'AIzaSyBHUl57FcPE8hx5J4wN46570t_16V1K9Ic';
 
+    const coordinates = {
+      latitude: 22.28552, 
+      longitude: 114.15769,
+      latitudeDelta: 0.5,
+      longitudeDelta: 0.5 * ratio,
+    };
 
     return (
       
@@ -104,11 +138,55 @@ class Search extends Component {
             {this.state.loading ? (
               <Loading />
             ) : (
-              <MapView
-                style={styles.map}
-                initialRegion={coordinates}
-              />
+              <MapView 
+                style={styles.map} 
+                initialRegion={coordinates} 
+                onPress={(e) => this.onMapPress(e)}
+                ref={c => this.mapView = c}>
+                {this.state.markers.map(marker => (
+                  <Marker
+                    key={marker.key}
+                    coordinate={marker.coordinate}
+                    pinColor={marker.color}
+                  />
+                ))}
+                {this.state.markers.length == 2 &&
+                  <MapViewDirections
+                    origin={this.state.markers[0].coordinate}
+                    destination={this.state.markers[1].coordinate}
+                    apikey={GOOGLE_MAPS_APIKEY}
+                    strokeWidth={3}
+                    strokeColor="#1E90FF"
+                    onReady={(result) => {
+                      this.mapView.fitToCoordinates(result.coordinates, {
+                        edgePadding: {
+                          right: (width / 20),
+                          bottom: (height / 20),
+                          left: (width / 20),
+                          top: (height / 20),
+                        }
+                      });
+                    }}
+                  />
+                }
+              </MapView>
             )}
+            <View style={styles.buttonContainer}>
+              <View style={styles.bubble}>
+              {(() => {
+                switch(this.state.markers.length) {
+                  case 0:
+                    return <Text>Tap to select starting point</Text>;
+                  case 1:
+                    return <Text>Tap to select end point</Text>;
+                  case 2:
+                    return <Button title="Reset" onPress={this.resetMarker}><Text>Reset</Text></Button>;
+                  default:
+                    return null;
+                }
+              })()}
+              </View>
+            </View>
           </View>
         </Content>
       </Container>
@@ -121,6 +199,5 @@ const Loading = () => (
     <Text>Loading...</Text>
   </View>
 );
-
 
 export default Search;

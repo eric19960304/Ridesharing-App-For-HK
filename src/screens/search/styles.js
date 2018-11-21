@@ -32,5 +32,5 @@ export default {
     flexDirection: 'row',
     marginVertical: 20,
     backgroundColor: 'transparent',
-  },
+  }
 };
