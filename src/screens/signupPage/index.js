@@ -19,14 +19,14 @@ class SignupPage extends Component {
       email: '',
       password: '',
       confirmPassword: '',
-      userName: '',
+      username: '',
     };
 
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
   render() {
-    const { email, password, confirmPassword,userName } = this.state;
+    const { email, password, confirmPassword,username } = this.state;
 
     return (
       <Container style={styles.container}>
@@ -54,8 +54,8 @@ class SignupPage extends Component {
 
               <Label>User Name</Label>
               <Input 
-                value={userName} 
-                onChangeText={(userName) => this.setState({userName})}/>
+                value={username} 
+                onChangeText={(username) => this.setState({username})}/>
             </Item>
             <Item floatingLabel>
               <Label>Password</Label>
@@ -90,7 +90,7 @@ class SignupPage extends Component {
   };
 
   async onFormSubmit(){
-    const { email, password, confirmPassword,userName } = this.state;
+    const { email, password, confirmPassword,username } = this.state;
     if(email.length === 0){
       Toast.show({
         text: "Please enter your email.",
@@ -100,9 +100,9 @@ class SignupPage extends Component {
       });
       return;
     }
-    if(userName.length === 0){
+    if(username.length === 0){
       Toast.show({
-        text: "Please enter your userName.",
+        text: "Please enter your username.",
         textStyle: { textAlign: 'center' },
         type: "warning",
         position: "top"
