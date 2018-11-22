@@ -5,21 +5,18 @@ import networkClient from "./networkClient";
 
 const storageManager = StorageManager.getInstance();
 
-const loginSignupCommon = async(email, password, url, successMessage) => {
+const loginSignupCommon = async(user, url, successMessage) => {
     let result = {
         isSuccess: false,
         message: 'something go wrong, please try again later!'
     };
 
-    const body = {
-        email: email.toLowerCase(),
-        password
-    };
+    const body = user;
     const response = await networkClient.POST(url, body);
     if(response.jwt){
 
-        const user = creator.createUser({
-            email,
+        const tempUser = creator.createUser({
+            email: user.email
         });
 
         storageManager.set('user', user);
@@ -42,8 +39,13 @@ const loginSignupCommon = async(email, password, url, successMessage) => {
 const login = async(email, password) => {
     const url = config.serverURL + '/user/login';
     const successMessage = "Login successful!";
+    const user ={
+       email: email.toLowerCase(),
+       password,
+    };
+    
     try{
-        return await loginSignupCommon(email, password, url, successMessage);
+        return await loginSignupCommon(user, url, successMessage);
     }catch(e){
         console.log(e);
     }
@@ -53,8 +55,13 @@ const login = async(email, password) => {
 const signup = async(email, password) => {
     const url = config.serverURL + '/user/signup';
     const successMessage = "Signup successful!";
+    const user ={
+        email: email.toLowerCase(),
+        username,
+        password,
+     };
     try{
-        return await loginSignupCommon(email, password, url, successMessage);
+        return await loginSignupCommon(user, url, successMessage);
     }catch(e){
         console.log(e);
     }
