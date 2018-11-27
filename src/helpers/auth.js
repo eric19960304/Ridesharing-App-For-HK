@@ -52,7 +52,7 @@ const login = async(email, password) => {
     
 }
 
-const signup = async(email, password) => {
+const signup = async(email, password, username) => {
     const url = config.serverURL + '/user/signup';
     const successMessage = "Signup successful!";
     const user ={

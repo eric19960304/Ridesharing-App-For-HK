@@ -52,7 +52,7 @@ class SignupPage extends Component {
             </Item>
             <Item floatingLabel>
 
-              <Label>User Name</Label>
+              <Label>Username</Label>
               <Input 
                 value={username} 
                 onChangeText={(username) => this.setState({username})}/>
@@ -90,7 +90,7 @@ class SignupPage extends Component {
   };
 
   async onFormSubmit(){
-    const { email, password, confirmPassword,username } = this.state;
+    const { email, password, confirmPassword, username } = this.state;
     if(email.length === 0){
       Toast.show({
         text: "Please enter your email.",
@@ -148,7 +148,7 @@ class SignupPage extends Component {
         message: 'something go wrong, please try again later!'
       };
       
-      result = await auth.signup(email, password);
+      result = await auth.signup(email, password, username);
       
       if(result.isSuccess === true){
 
