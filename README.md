@@ -20,7 +20,7 @@ Run:
 
 
 -----------------------
-**Something about Javascript (>ES7)**
+**Something about Javascript (>=ES7)**
 
 use const/let instead of var (though var is still available)
 
