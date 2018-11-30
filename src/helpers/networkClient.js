@@ -2,8 +2,6 @@ import StorageManager from "./storageManager";
 
 const storageManager = StorageManager.getInstance();
 
-const jwt = storageManager.get('jwt');
-
 const POST = async (url, body) => {
     try{
         const response = await fetch(url, {
@@ -22,6 +20,7 @@ const POST = async (url, body) => {
 
 const POSTWithJWT = async (url, body) => {
     try{
+        const jwt = storageManager.get('jwt');
         const response = await fetch(url, {
             method: 'POST',
             headers: {

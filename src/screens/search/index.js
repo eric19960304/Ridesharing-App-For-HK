@@ -5,26 +5,15 @@ import {
   InteractionManager
 } from 'react-native';
 import {
-  Container,
-  Header,
-  Title,
-  Content,
-  Text,
-  Button,
-  Icon,
-  Footer,
-  FooterTab,
-  Left,
-  Right,
-  Body,
-  Spinner
+  Container, Header, Title, Content, Text, Button,
+  Icon, Footer, FooterTab, Left, Right, Body, Spinner
 } from "native-base";
 
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import styles from './styles';
-import networkClient from "./networkClient";
-import config from "../../config";
+import networkClient from "../../helpers/networkClient";
+import config from "../../../config";
 
 
 const { width, height } = Dimensions.get('window');
@@ -70,7 +59,7 @@ class Search extends Component {
       },
       loading: true,
       markers: [],
-      GOOGLE_MAPS_API_KEY: null
+      GOOGLE_MAP_API_KEY: null
     };
 
     this.mapView = null;
@@ -78,19 +67,23 @@ class Search extends Component {
     this.resetMarker = this.resetMarker.bind(this);
   }
 
-  componentDidMount() {
-    InteractionManager.runAfterInteractions(() => {
-      networkClient.POSTWithJWT(config.serverURL + '/api/secret/google-map-api-key', {})
-      .then( (apikey)=>{
-        this.setState = {
-          GOOGLE_MAPS_API_KEY: apikey,
+  componentWillMount() {
+    networkClient.POSTWithJWT(config.serverURL + '/api/secret/google-map-api-key', {})
+    .then( (data)=>{
+      if(!data) return;
+
+      if(data.googleMapApiKey){
+        this.setState({
+          GOOGLE_MAP_API_KEY: data.googleMapApiKey,
           loading: false
-        };
-      })
-      .catch( (error)=>{
-        console.log(error);
-      });
+        });
+      }else if(data.message){
+        console.log(data.message);
+      }
       
+    })
+    .catch( (error)=>{
+      console.log(error);
     });
   }
 
@@ -118,6 +111,7 @@ class Search extends Component {
 
     const { width, height } = Dimensions.get('window');
     const ratio = width / height;
+    const { GOOGLE_MAP_API_KEY } = this.state;
 
     const coordinates = {
       latitude: 22.28552, 
@@ -125,6 +119,31 @@ class Search extends Component {
       latitudeDelta: 0.5,
       longitudeDelta: 0.5 * ratio,
     };
+
+    if(this.state.loading){
+      <Container>
+        <Header>
+          <Left>
+            <Button
+              transparent
+              onPress={() => this.props.navigation.navigate("DrawerOpen")}
+            >
+              <Icon name="ios-menu" />
+            </Button>
+          </Left>
+          <Body>
+            <Title>Find Ride</Title>
+          </Body>
+          <Right />
+        </Header>
+
+        <Content scrollEnabled={false}>
+          <View style={{ width, height }}>
+            <Loading />
+          </View>
+        </Content>
+      </Container>
+    }
 
     return (
       
@@ -146,42 +165,38 @@ class Search extends Component {
 
         <Content scrollEnabled={false}>
           <View style={{ width, height }}>
-            {this.state.loading ? (
-              <Loading />
-            ) : (
-              <MapView 
-                style={styles.map} 
-                initialRegion={coordinates} 
-                onPress={(e) => this.onMapPress(e)}
-                ref={c => this.mapView = c}>
-                {this.state.markers.map(marker => (
-                  <Marker
-                    key={marker.key}
-                    coordinate={marker.coordinate}
-                    pinColor={marker.color}
-                  />
-                ))}
-                {this.state.markers.length == 2 &&
-                  <MapViewDirections
-                    origin={this.state.markers[0].coordinate}
-                    destination={this.state.markers[1].coordinate}
-                    apikey={GOOGLE_MAPS_API_KEY}
-                    strokeWidth={3}
-                    strokeColor="#1E90FF"
-                    onReady={(result) => {
-                      this.mapView.fitToCoordinates(result.coordinates, {
-                        edgePadding: {
-                          right: (width / 20),
-                          bottom: (height / 20),
-                          left: (width / 20),
-                          top: (height / 20),
-                        }
-                      });
-                    }}
-                  />
-                }
-              </MapView>
-            )}
+            <MapView 
+              style={styles.map} 
+              initialRegion={coordinates} 
+              onPress={(e) => this.onMapPress(e)}
+              ref={c => this.mapView = c}>
+              {this.state.markers.map(marker => (
+                <Marker
+                  key={marker.key}
+                  coordinate={marker.coordinate}
+                  pinColor={marker.color}
+                />
+              ))}
+              {this.state.markers.length == 2 &&
+                <MapViewDirections
+                  origin={this.state.markers[0].coordinate}
+                  destination={this.state.markers[1].coordinate}
+                  apikey={GOOGLE_MAP_API_KEY}
+                  strokeWidth={3}
+                  strokeColor="#1E90FF"
+                  onReady={(result) => {
+                    this.mapView.fitToCoordinates(result.coordinates, {
+                      edgePadding: {
+                        right: (width / 20),
+                        bottom: (height / 20),
+                        left: (width / 20),
+                        top: (height / 20),
+                      }
+                    });
+                  }}
+                />
+              }
+            </MapView>
             <View style={styles.buttonContainer}>
               <View style={styles.bubble}>
               {(() => {

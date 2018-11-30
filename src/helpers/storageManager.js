@@ -72,7 +72,12 @@ export default class StorageManager {
     get(key) {
         // clone a new object instead of return the reference!
         if(this[key]){
-            return Object.assign({}, this[key]);
+            const data = this[key];
+            if(typeof data === 'object'){
+                return Object.assign({}, );
+            }else{
+                return data;
+            }
         }else{
             return this[key];
         }
