@@ -37,7 +37,7 @@ const loginSignupCommon = async(user, url, successMessage) => {
 }
 
 const login = async(email, password) => {
-    const url = config.serverURL + '/user/login';
+    const url = config.serverURL + '/auth/login';
     const successMessage = "Login successful!";
     const user ={
        email: email.toLowerCase(),
@@ -53,7 +53,7 @@ const login = async(email, password) => {
 }
 
 const signup = async(email, password, username) => {
-    const url = config.serverURL + '/user/signup';
+    const url = config.serverURL + '/auth/signup';
     const successMessage = "Signup successful!";
     const user ={
         email: email.toLowerCase(),

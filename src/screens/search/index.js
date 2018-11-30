@@ -16,12 +16,15 @@ import {
   FooterTab,
   Left,
   Right,
-  Body
+  Body,
+  Spinner
 } from "native-base";
 
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import styles from './styles';
+import networkClient from "./networkClient";
+import config from "../../config";
 
 
 const { width, height } = Dimensions.get('window');
@@ -66,7 +69,8 @@ class Search extends Component {
         image: IMAGE_URL2,
       },
       loading: true,
-      markers: []
+      markers: [],
+      GOOGLE_MAPS_API_KEY: null
     };
 
     this.mapView = null;
@@ -76,7 +80,17 @@ class Search extends Component {
 
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
-      this.setState({ loading: false });
+      networkClient.POSTWithJWT(config.serverURL + '/api/secret/google-map-api-key', {})
+      .then( (apikey)=>{
+        this.setState = {
+          GOOGLE_MAPS_API_KEY: apikey,
+          loading: false
+        };
+      })
+      .catch( (error)=>{
+        console.log(error);
+      });
+      
     });
   }
 
@@ -104,9 +118,6 @@ class Search extends Component {
 
     const { width, height } = Dimensions.get('window');
     const ratio = width / height;
-
-    const GOOGLE_MAPS_APIKEY = 'AIzaSyDaR4PaEfbySA5bRP243KwFk9qtSbDVntQ';
-    //const GOOGLE_MAPS_APIKEY = 'AIzaSyBHUl57FcPE8hx5J4wN46570t_16V1K9Ic';
 
     const coordinates = {
       latitude: 22.28552, 
@@ -154,7 +165,7 @@ class Search extends Component {
                   <MapViewDirections
                     origin={this.state.markers[0].coordinate}
                     destination={this.state.markers[1].coordinate}
-                    apikey={GOOGLE_MAPS_APIKEY}
+                    apikey={GOOGLE_MAPS_API_KEY}
                     strokeWidth={3}
                     strokeColor="#1E90FF"
                     onReady={(result) => {
@@ -196,7 +207,7 @@ class Search extends Component {
 
 const Loading = () => (
   <View style={styles.container}>
-    <Text>Loading...</Text>
+    <Spinner color="blue" />
   </View>
 );
 
