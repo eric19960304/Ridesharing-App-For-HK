@@ -142,7 +142,7 @@ class SignupPage extends Component {
       this.props.navigation.navigate('LoginPage');
 
     }else if(response.message){
-      // login fails
+      // signup fails
       Toast.show({
         text: response.message,
         textStyle: { textAlign: 'center' },
