@@ -6,9 +6,9 @@ import {
 } from "native-base";
 import styles from "./styles";
 
-import config from "../../config";
-import networkClient from "./networkClient";
-import StorageManager from "./storageManager";
+import config from "../../../config";
+import networkClient from "../../helpers/networkClient";
+import StorageManager from "../../helpers/storageManager";
 const storageManager = StorageManager.getInstance();
 
 class LoginPage extends Component {
@@ -94,7 +94,6 @@ class LoginPage extends Component {
     const url = config.serverURL + '/auth/login';
     const body ={
         email: email.toLowerCase(),
-        nickname,
         password,
     };
     const response = await networkClient.POST(url, body);
@@ -120,6 +119,14 @@ class LoginPage extends Component {
 
     }else if(response.message){
       // login fails
+      Toast.show({
+        text: response.message,
+        textStyle: { textAlign: 'center' },
+        type: "danger",
+        position: "top",
+      });
+    }else{
+      // server error
       Toast.show({
         text: failMessage,
         textStyle: { textAlign: 'center' },

@@ -6,7 +6,8 @@ import {
 } from "native-base";
 import styles from "./styles";
 
-import networkClient from "./networkClient";
+import config from "../../../config";
+import networkClient from "../../helpers/networkClient";
 
 class SignupPage extends Component {
 
@@ -49,16 +50,13 @@ class SignupPage extends Component {
                 onChangeText={(email) => this.setState({email})}/>
             </Item>
             <Item floatingLabel>
-
-              <Label>nickname</Label>
+              <Label style={styles.label}>Nickname</Label>
               <Input 
                 value={nickname} 
                 onChangeText={(nickname) => this.setState({nickname})}/>
             </Item>
             <Item floatingLabel>
-              <Label>Password</Label>
               <Label style={styles.label}>Password</Label>
-
               <Input 
                 secureTextEntry 
                 value={password} 
@@ -146,11 +144,19 @@ class SignupPage extends Component {
     }else if(response.message){
       // login fails
       Toast.show({
+        text: response.message,
+        textStyle: { textAlign: 'center' },
+        type: "danger",
+        position: "top",
+      });
+    }else{
+      // server error
+      Toast.show({
         text: failMessage,
         textStyle: { textAlign: 'center' },
         type: "danger",
         position: "top",
-      });      
+      });
     }
 
   } // end of onFormSubmit
