@@ -6,9 +6,7 @@ import {
 } from "native-base";
 import styles from "./styles";
 
-import auth from "../../helpers/auth";
-
-
+import networkClient from "./networkClient";
 
 class SignupPage extends Component {
 
@@ -19,14 +17,14 @@ class SignupPage extends Component {
       email: '',
       password: '',
       confirmPassword: '',
-      username: '',
+      nickname: '',
     };
 
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
   render() {
-    const { email, password, confirmPassword,username } = this.state;
+    const { email, password, confirmPassword,nickname } = this.state;
 
     return (
       <Container style={styles.container}>
@@ -52,10 +50,10 @@ class SignupPage extends Component {
             </Item>
             <Item floatingLabel>
 
-              <Label>Username</Label>
+              <Label>nickname</Label>
               <Input 
-                value={username} 
-                onChangeText={(username) => this.setState({username})}/>
+                value={nickname} 
+                onChangeText={(nickname) => this.setState({nickname})}/>
             </Item>
             <Item floatingLabel>
               <Label>Password</Label>
@@ -90,90 +88,69 @@ class SignupPage extends Component {
   };
 
   async onFormSubmit(){
-    const { email, password, confirmPassword, username } = this.state;
-    if(email.length === 0){
-      Toast.show({
-        text: "Please enter your email.",
-        textStyle: { textAlign: 'center' },
-        type: "warning",
-        position: "top"
-      });
-      return;
-    }
-    if(username.length === 0){
-      Toast.show({
-        text: "Please enter your username.",
-        textStyle: { textAlign: 'center' },
-        type: "warning",
-        position: "top"
-      });
-      return;
-    }
-
-    if(password.length === 0){
-      Toast.show({
-        text: "Please enter your password.",
-        textStyle: { textAlign: 'center' },
-        type: "warning",
-        position: "top"
-      });
-      return;
-    }
-
-    if(confirmPassword.length === 0){
-      Toast.show({
-        text: "Password not match, please check again.",
-        textStyle: { textAlign: 'center' },
-        type: "warning",
-        position: "top"
-      });
-      return;
-    }
-
-    if(password !== confirmPassword){
-      Toast.show({
-        text: "passwords do not match, please confirm.",
-        textStyle: { textAlign: 'center' },
-        type: "warning",
-        position: "top"
-      });
-      return;
-    }
-
+    const { email, nickname, password, confirmPassword  } = this.state;
     
-    try{
+    // check if form input valid
+    let errorMessage = null;
+    if(email.length === 0){
+      errorMessage = "Please enter your email.";
+    }
+    if(nickname.length === 0){
+      errorMessage = "Please enter your nickname.";
+    }
+    if(password.length === 0){
+      errorMessage = "Please enter your password.";
+    }
+    if(confirmPassword.length === 0){
+      errorMessage = "Password not match, please check again.";
+    }
+    if(password !== confirmPassword){
+      errorMessage = "passwords do not match, please confirm.";
+    }
+    if(errorMessage){
+      Toast.show({
+        text: message,
+        textStyle: { textAlign: 'center' },
+        type: "warning",
+        position: "top"
+      });
+      return;
+    }
+  
+    // send request to backend
+    const url = config.serverURL + '/auth/signup';
+    const body ={
+        email: email.toLowerCase(),
+        nickname,
+        password,
+    };
+    const response = await networkClient.POST(url, body);
 
-      let result = {
-        isSuccess: false,
-        message: 'something go wrong, please try again later!'
-      };
-      
-      result = await auth.signup(email, password, username);
-      
-      if(result.isSuccess === true){
+    // check return value from backend
+    const successMessage = "Signup successful, please check your email for activate link";
+    const failMessage = 'something go wrong, please try again later!';
+    if(response.success){
+      // signup successful
 
-        Toast.show({
-          text: result.message,
-          textStyle: { textAlign: 'center' },
-          type: "success",
-          position: "top",
-          duration: 3000
-        });
+      Toast.show({
+        text: successMessage,
+        textStyle: { textAlign: 'center' },
+        type: "success",
+        position: "top",
+        duration: 3000
+      });
 
-        Keyboard.dismiss();
-        this.props.navigation.navigate('WelcomePage');
+      Keyboard.dismiss();
+      this.props.navigation.navigate('LoginPage');
 
-      }else{
-        Toast.show({
-          text: result.message,
-          textStyle: { textAlign: 'center' },
-          type: "danger",
-          position: "top",
-        });
-      }
-
-    }catch(e){
-      console.log(e);
+    }else if(response.message){
+      // login fails
+      Toast.show({
+        text: failMessage,
+        textStyle: { textAlign: 'center' },
+        type: "danger",
+        position: "top",
+      });      
     }
 
   } // end of onFormSubmit

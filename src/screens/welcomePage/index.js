@@ -32,7 +32,7 @@ class WelcomePage extends Component {
           {user ?
           <View style={styles.contentContainer}>
             <View style={styles.titleContainer}>
-              <H2 style={styles.text}>Hello!</H2>
+              <H2 style={styles.text}>Hello, {user.nickname}!</H2>
             </View>
             <View style={styles.buttonGroup}>
                 <Button

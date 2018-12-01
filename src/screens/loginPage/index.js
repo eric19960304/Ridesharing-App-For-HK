@@ -6,8 +6,10 @@ import {
 } from "native-base";
 import styles from "./styles";
 
-import auth from "../../helpers/auth";
-
+import config from "../../config";
+import networkClient from "./networkClient";
+import StorageManager from "./storageManager";
+const storageManager = StorageManager.getInstance();
 
 class LoginPage extends Component {
 
@@ -67,62 +69,63 @@ class LoginPage extends Component {
   };
 
   async onFormSubmit(){
+
     const { email, password } = this.state;
 
+    // check if form input valid
+    let errorMessage = null;
     if(email.length==0){
-      Toast.show({
-        text: "Please enter your email.",
-        textStyle: { textAlign: 'center' },
-        type: "warning",
-        position: "top"
-      });
-      return;
+      errorMessage = "Please enter your email.";
     }
-
     if(password.length==0){
+      errorMessage = "Please enter your password.";
+    }
+    if(errorMessage){
       Toast.show({
-        text: "Please enter your password.",
+        text: errorMessage,
         textStyle: { textAlign: 'center' },
         type: "warning",
         position: "top"
       });
       return;
     }
+    
+    // send request to backend
+    const url = config.serverURL + '/auth/login';
+    const body ={
+        email: email.toLowerCase(),
+        nickname,
+        password,
+    };
+    const response = await networkClient.POST(url, body);
 
+    // check return value from backend
+    const successMessage = "Signup successful!";
+    const failMessage = 'something go wrong, please try again later!';
+    if(response.jwt && response.user){
+      // login successful
+      storageManager.set('user', response.user);
+      storageManager.set('jwt', response.jwt);
 
-    try{
+      Toast.show({
+        text: successMessage,
+        textStyle: { textAlign: 'center' },
+        type: 'success',
+        position: "top",
+        duration: 3000
+      });
 
-      let result = {
-        isSuccess: false,
-        message: 'something go wrong, please try again later!'
-      };
-      
-      result = await auth.login(email, password);
-      
-      if(result.isSuccess === true){
+      Keyboard.dismiss();
+      this.props.navigation.navigate('WelcomePage');
 
-        Toast.show({
-          text: result.message,
-          textStyle: { textAlign: 'center' },
-          type: "success",
-          position: "top",
-          duration: 3000
-        });
-
-        Keyboard.dismiss();
-        this.props.navigation.navigate('WelcomePage');
-
-      }else{
-        Toast.show({
-          text: result.message,
-          textStyle: { textAlign: 'center' },
-          type: "danger",
-          position: "top",
-        });
-      }
-
-    }catch(e){
-      console.log(e);
+    }else if(response.message){
+      // login fails
+      Toast.show({
+        text: failMessage,
+        textStyle: { textAlign: 'center' },
+        type: "danger",
+        position: "top",
+      });
     }
 
   } // end of onFormSubmit
