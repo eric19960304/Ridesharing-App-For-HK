@@ -74,7 +74,7 @@ export default class StorageManager {
         if(this[key]){
             const data = this[key];
             if(typeof data === 'object'){
-                return Object.assign({}, );
+                return Object.assign({}, data);
             }else{
                 return data;
             }
