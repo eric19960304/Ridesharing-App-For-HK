@@ -27,6 +27,7 @@ class GoDrivePage extends Component {
     };
 
     this.mapView = null;
+    this.driverLocation = null;
   }
 
   componentWillMount() {
@@ -42,7 +43,22 @@ class GoDrivePage extends Component {
     Location.getCurrentPositionAsync({})
     .then( (data)=>{
       if(data){
-        this.sendLocationToServer(data);
+        if(!this.driverLocation){
+          this.driverLocation = data;
+          this.sendLocationToServer(data);
+        }
+
+        let prevLocation = Object.assign({}, this.driverLocation);
+        const prevLat = parseFloat(prevLocation.coords.latitude);
+        const prevLong = parseFloat(prevLocation.coords.longitude);
+        const currentLat = parseFloat(data.coords.latitude);
+        const currentLong = parseFloat(data.coords.longitude);
+        let latDiff = Math.abs(currentLat - prevLat);
+        let longDiff = Math.abs(currentLong - prevLong);
+        if(latDiff+longDiff > 0.001){
+          this.driverLocation = data;
+          this.sendLocationToServer(data);
+        }
       }
     })
     .catch((err)=>{
@@ -56,7 +72,13 @@ class GoDrivePage extends Component {
       location: data.coords,
       timestamp: data.timestamp,
     };
-    await networkClient.POST(url, body);
+    networkClient.POSTWithJWT(url, body)
+    .then((result)=>{
+      console.log(result);
+    })
+    .catch(()=>{
+      console.log('err:', err);
+    });
   }
 
   render() {

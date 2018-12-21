@@ -124,7 +124,6 @@ class SignupPage extends Component {
         password,
     };
     const response = await networkClient.POST(url, body);
-
     // check return value from backend
     const successMessage = "Signup successful, please check your email for activate link";
     const failMessage = 'something go wrong, please try again later!';
