@@ -3,6 +3,7 @@ import {
   Container, Header, Title, Content, Text, Button,
   Icon, Left, Right, Body, Separator, ListItem, Toast
 } from "native-base";
+import { NavigationActions } from 'react-navigation';
 
 import styles from "./styles";
 import StorageManager from "../../helpers/storageManager";
@@ -69,7 +70,14 @@ class SettingPage extends Component {
       duration: 3000,
       position: "top"
     });
-    this.props.navigation.navigate('WelcomePage');
+    // reset navigation to welcomepage
+    const resetAction = NavigationActions.reset({
+      index: 0,
+      actions: [
+        NavigationActions.navigate({ routeName: 'WelcomePage'})
+      ]
+    });
+    this.props.navigation.dispatch(resetAction);
     
   }
 }

@@ -4,8 +4,9 @@ import {
   Container, Header, Title, Content, Button, Item, Label,
   Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
-import styles from "./styles";
+import { NavigationActions } from 'react-navigation';
 
+import styles from "./styles";
 import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
 import StorageManager from "../../helpers/storageManager";
@@ -115,7 +116,14 @@ class LoginPage extends Component {
       });
 
       Keyboard.dismiss();
-      this.props.navigation.navigate('WelcomePage');
+      // reset navigation to welcomepage
+      const resetAction = NavigationActions.reset({
+        index: 0,
+        actions: [
+          NavigationActions.navigate({ routeName: 'WelcomePage'})
+        ]
+      });
+      this.props.navigation.dispatch(resetAction);
 
     }else if(response.message){
       // login fails
