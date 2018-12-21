@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Image } from "react-native";
+import helpers from "../../helpers";
+import { Image, View } from "react-native";
+import {Avatar} from 'react-native-elements';
 import {
   Content,
   Text,
@@ -13,6 +15,7 @@ import {
 } from "native-base";
 import styles from "./style";
 
+const storageManager = helpers.StorageManager.getInstance();
 const drawerCover = require("../../../assets/drawer-cover.png");
 const drawerImage = require("../../../assets/logo-threeriders.png");
 const datas = [
@@ -42,15 +45,31 @@ class SideBar extends Component {
   }
 
   render() {
+    const user = storageManager.get('user');
     return (
       <Container>
         <Content
           bounces={false}
           style={{ flex: 1, backgroundColor: "#fff", top: -1 }}
         >
-          <Image source={drawerCover} style={styles.drawerCover} />
-          <Image square style={styles.drawerImage} source={drawerImage} />
-
+          {/*<Image source={drawerCover} style={styles.drawerCover} />
+          <Image square style={styles.drawerImage} source={drawerImage} />*/}
+          <View style={styles.flexContainer}>
+      <View style={[styles.cell,{padding : 20}]}>
+          <Avatar style={{padding : 20}}
+              xlarge
+              rounded
+              source={{uri: "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"}}
+              onPress={() => console.log("Works!")}
+              activeOpacity={0.7}
+          />
+      </View>
+      <View style={styles.cell}>
+        <Text style={[styles.text,{color: 'white',fontSize: 24,marginTop:50,marginLeft:15  }]}>{user.nickname}</Text>
+      </View>
+      
+    </View>
+                       
           <List
             dataArray={datas}
             renderRow={data =>

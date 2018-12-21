@@ -25,6 +25,11 @@ export default {
     fontSize: 16,
     marginLeft: 20,
   },
+  text1: {
+    fontWeight: Platform.OS === "ios" ? "500" : "400",
+    fontSize: 16,
+    marginLeft: 20,
+  },
   badgeText: {
     fontSize: Platform.OS === "ios" ? 13 : 11,
     fontWeight: "400",
@@ -33,5 +38,24 @@ export default {
     textShadowColor: 'rgba(0, 0, 0, 0)',
     textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 10
-  }
+  },
+    flexContainer: {
+        flexDirection: 'row'
+    },
+    cell: {
+        flex: 1,
+        height: 187,
+        backgroundColor: '#111111',
+        alignItems: "center",
+    },
+    welcome: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 10
+    },
+    Avatar: {
+      alignItems: 'center'
+    }
+
+
 };
