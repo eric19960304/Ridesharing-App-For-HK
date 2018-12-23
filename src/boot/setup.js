@@ -1,4 +1,4 @@
-import * as Expo from "expo";
+import { Font, Permissions, AppLoading } from "expo";
 import React, { Component } from "react";
 import { StyleProvider } from "native-base";
 
@@ -15,21 +15,34 @@ export default class Setup extends Component {
     };
   }
   componentWillMount() {
-    this.loadData();
+    this.prepare();
   }
-  async loadData() {
-    await Expo.Font.loadAsync({
+
+  async prepare() {
+
+    let checkList = [];
+
+    await Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
     });
+
     let storageManager = StorageManager.getInstance();
-    await storageManager.loadAllDataFromPersistence();
-    this.setState({ isReady: true });
+    let storageStatus = await storageManager.loadAllDataFromPersistence();
+
+    let locationPermissionStatus = await Permissions.askAsync(Permissions.LOCATION);
+    
+    checkList.push(storageStatus);
+    checkList.push(locationPermissionStatus);
+    allCheckingPass = checkList.every( (b) => !!b );
+
+    this.setState({ isReady: allCheckingPass });
   }
+
   render() {
     if (!this.state.isReady) {
-      return <Expo.AppLoading />;
+      return <AppLoading />;
     }
     return (
       <StyleProvider style={getTheme(variables)}>

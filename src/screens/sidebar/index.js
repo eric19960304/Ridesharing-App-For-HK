@@ -24,6 +24,12 @@ const datas = [
     bg: "#C5F442"
   },
   {
+    name: "Go Drive",
+    route: "GoDrivePage",
+    icon: "car",
+    bg: "#C5F442"
+  },
+  {
     name: "Setting",
     route: "SettingPage",
     icon: "cog",

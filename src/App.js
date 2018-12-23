@@ -8,10 +8,12 @@ import SideBar from "./screens/sidebar";
 import Search from "./screens/search";
 import LoginPage from './screens/loginPage';
 import SignupPage from './screens/signupPage';
+import GoDrivePage from './screens/goDrivePage';
 
 const Drawer = DrawerNavigator(
   {
     Search: { screen: Search },
+    GoDrivePage: { screen: GoDrivePage },
     SettingPage: { screen: SettingPage },
   },
   {
@@ -28,7 +30,7 @@ const AppNavigator = StackNavigator(
     Drawer: { screen: Drawer },
     LoginPage: { screen: LoginPage },
     SignupPage: { screen: SignupPage },
-    WelcomePage: { screen: WelcomePage },
+    WelcomePage: { screen: WelcomePage }
   },
   {
     initialRouteName: "WelcomePage",
