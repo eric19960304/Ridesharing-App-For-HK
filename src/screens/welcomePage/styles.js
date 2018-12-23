@@ -1,5 +1,4 @@
-const React = require("react-native");
-const { Dimensions, Platform } = React;
+import { Platform, Dimensions } from 'react-native';
 const deviceHeight = Dimensions.get("window").height;
 
 export default {

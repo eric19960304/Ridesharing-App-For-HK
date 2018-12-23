@@ -17,12 +17,14 @@ import config from "../../../config";
 
 const { width, height } = Dimensions.get('window');
 
-const ASPECT_RATIO = width / height;
-const LATITUDE = 35.679976;
-const LONGITUDE = 139.768458;
-const LATITUDE_DELTA = 0.01;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-let id = 0;
+const ratio = width / height;
+const coordinates = {
+  latitude: 22.28552, 
+  longitude: 114.15769,
+  latitudeDelta: 0.5,
+  longitudeDelta: 0.5 * ratio,
+};
+let markerId = 0;
 
 function randomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -34,12 +36,6 @@ class Search extends Component {
     super(props);
 
     this.state = {
-      region: {
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      },
       loading: true,
       markers: [],
       GOOGLE_MAP_API_KEY: null
@@ -77,7 +73,7 @@ class Search extends Component {
           ...this.state.markers,
           {
             coordinate: e.nativeEvent.coordinate,
-            key: id++,
+            key: markerId++,
             color: randomColor(),
           },
         ],
@@ -87,21 +83,13 @@ class Search extends Component {
 
   resetMarker(){
     this.setState({ markers: [] });
-    id = 0;
+    markerId = 0;
   }
 
   render() {
 
     const { width, height } = Dimensions.get('window');
-    const ratio = width / height;
     const { GOOGLE_MAP_API_KEY } = this.state;
-
-    const coordinates = {
-      latitude: 22.28552, 
-      longitude: 114.15769,
-      latitudeDelta: 0.5,
-      longitudeDelta: 0.5 * ratio,
-    };
 
     if(this.state.loading){
       return (

@@ -3,10 +3,11 @@ import { Location } from "expo";
 import {
   View,
   Dimensions,
+  Platform
 } from 'react-native';
 import {
-  Container, Header, Title, Content, Text, Button,
-  Icon, Left, Right, Body, Spinner
+  Container, Header, Title, Content, Button,
+  Icon, Left, Right, Body, Spinner, Toast
 } from "native-base";
 
 import MapView, { Marker } from 'react-native-maps';
@@ -14,9 +15,14 @@ import styles from './styles';
 import networkClient from "../../helpers/networkClient";
 import config from "../../../config";
 
-
 const { width, height } = Dimensions.get('window');
-
+const ratio = width / height;
+const coordinates = {
+  latitude: 22.28552, 
+  longitude: 114.15769,
+  latitudeDelta: 0.5,
+  longitudeDelta: 0.5 * ratio,
+};
 class GoDrivePage extends Component {
 
   constructor(props) {
@@ -31,12 +37,31 @@ class GoDrivePage extends Component {
   }
 
   componentWillMount() {
-    this.updateLocation();
-    this._updateLocationWorker = setInterval(this.updateLocation, 5000);
+    Location.getProviderStatusAsync()
+    .then((result)=>{
+      console.log(result);
+      if(result.locationServicesEnabled){
+        this.updateLocation();
+        this._updateLocationWorker = setInterval(this.updateLocation, 5000);
+      }else{
+        this._updateLocationWorker = setInterval(this.displayLocationNotEnabledWarning, 5000);
+      }
+    })
+    .catch((err)=>{
+      console.log(err);
+    });
   }
 
   componentWillUnmount() {
     clearInterval(this._updateLocationWorker);
+  }
+
+  displayLocationNotEnabledWarning = ()=>{
+    Toast.show({
+      text: 'Please enable location service',
+      textStyle: { textAlign: 'center' },
+      type: "warning"
+    });
   }
 
   updateLocation = () => {
@@ -134,10 +159,12 @@ class GoDrivePage extends Component {
           <View style={{ width, height }}>
 
             <MapView 
+              initialRegion={coordinates} 
               style={styles.map} 
-              scrollEnabled={false}
+              scrollEnabled={Platform.OS=="android"?true:false}
               showsUserLocation={true}
               followsUserLocation={true}
+              showsMyLocationButton={ Platform.OS=="android"?true:false}
               ref={c => this.mapView = c}
             >
 

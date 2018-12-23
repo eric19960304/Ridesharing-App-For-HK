@@ -1,5 +1,4 @@
-const React = require("react-native");
-const { Platform } = React;
+import { Platform } from 'react-native';
 
 export default {
   container: {
