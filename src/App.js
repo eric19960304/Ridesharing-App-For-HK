@@ -1,6 +1,6 @@
 import React from "react";
 import { Root } from "native-base";
-import { StackNavigator, DrawerNavigator } from "react-navigation";
+import { createAppContainer, createStackNavigator, createDrawerNavigator } from "react-navigation";
 
 import WelcomePage from "./screens/welcomePage";
 import SettingPage from "./screens/settingPage";
@@ -10,7 +10,7 @@ import LoginPage from './screens/loginPage';
 import SignupPage from './screens/signupPage';
 import GoDrivePage from './screens/goDrivePage';
 
-const Drawer = DrawerNavigator(
+const Drawer = createDrawerNavigator(
   {
     Search: { screen: Search },
     GoDrivePage: { screen: GoDrivePage },
@@ -25,7 +25,7 @@ const Drawer = DrawerNavigator(
   }
 );
 
-const AppNavigator = StackNavigator(
+const AppNavigator = createStackNavigator(
   {
     Drawer: { screen: Drawer },
     LoginPage: { screen: LoginPage },
@@ -38,7 +38,9 @@ const AppNavigator = StackNavigator(
   }
 );
 
+const AppContainer = createAppContainer(AppNavigator);
+
 export default () =>
   <Root>
-    <AppNavigator />
+    <AppContainer />
   </Root>;

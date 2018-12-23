@@ -1,24 +1,29 @@
 {
   "expo": {
-    "sdkVersion": "27.0.0",
-    "icon": "./assets/nblogo.png",
-    "slug": "threeriders",
-    "loading": {
-      "hideExponentText": true,
-      "backgroundImage": "./assets/splashscreen.png"
-    },
+    "name": "Threeriders",
+    "slug": "Threeriders",
+    "privacy": "public",
+    "sdkVersion": "31.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.0.0",
     "orientation": "portrait",
-    "primaryColor": "#000000",
-    "packagerOpts": {
-      "assetExts": [
-        "ttf"
-      ]
+    "icon": "./assets/nblogo.png",
+    "splash": {
+      "image": "./assets/splashscreen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
-    "androidStatusBarColor": "#000000",
-    "androidStatusBar": {
-      "barStyle": "light-content",
-      "backgroundColor": "#000000"
+    "updates": {
+      "fallbackToCacheTimeout": 0
     },
-    "privacy": "public"
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    }
   }
 }

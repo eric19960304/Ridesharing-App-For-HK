@@ -3,7 +3,7 @@ import {
   Container, Header, Title, Content, Text, Button,
   Icon, Left, Right, Body, Separator, ListItem, Toast
 } from "native-base";
-import { NavigationActions } from 'react-navigation';
+import navigation from '../../helpers/navigation';
 
 import styles from "./styles";
 import StorageManager from "../../helpers/storageManager";
@@ -25,9 +25,9 @@ class SettingPage extends Component {
           <Left>
             <Button
               transparent
-              onPress={() => this.props.navigation.navigate("DrawerOpen")}
+              onPress={() => this.props.navigation.openDrawer()}
             >
-              <Icon name="ios-menu" />
+              <Icon type="MaterialIcons" name="menu" />
             </Button>
           </Left>
           <Body>
@@ -70,14 +70,8 @@ class SettingPage extends Component {
       duration: 3000,
       position: "top"
     });
-    // reset navigation to welcomepage
-    const resetAction = NavigationActions.reset({
-      index: 0,
-      actions: [
-        NavigationActions.navigate({ routeName: 'WelcomePage'})
-      ]
-    });
-    this.props.navigation.dispatch(resetAction);
+
+    this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
     
   }
 }

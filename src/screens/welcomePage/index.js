@@ -24,18 +24,19 @@ class WelcomePage extends Component {
     return (
       <Container>
         <StatusBar barStyle="light-content" />
+      
         <ImageBackground source={launchscreenBg} style={styles.imageContainer}>
           <View style={styles.logoContainer}>
             <ImageBackground source={launchscreenLogo} style={styles.logo} />
           </View>
-          
+
           <View style={styles.contentContainer}>
 
             {user ?
               <View  style={styles.titleContainer}>
                 <H2 style={styles.text}>Hello, {user.nickname}!</H2>
               </View>
-            :
+              :
               <View  style={styles.titleContainer}>
                 <H2 style={styles.text}>An Easy-to-use</H2>
                 <H2 style={styles.text}>Ridesharing App for Hong Kong</H2>
@@ -57,7 +58,7 @@ class WelcomePage extends Component {
                   <Text>Go Drive</Text>
                 </Button>
               </View>
-            :
+              :
               <View style={styles.buttonGroup} >
                 <Button
                   style={styles.leftButton}
@@ -75,7 +76,6 @@ class WelcomePage extends Component {
             }
 
           </View>
-          }
         </ImageBackground>
       </Container>
     );

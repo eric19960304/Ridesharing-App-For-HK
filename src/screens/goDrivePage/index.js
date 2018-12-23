@@ -92,9 +92,9 @@ class GoDrivePage extends Component {
             <Left>
               <Button
                 transparent
-                onPress={() => this.props.navigation.navigate("DrawerOpen")}
+                onPress={() => this.props.navigation.openDrawer()}
               >
-                <Icon name="ios-menu" />
+                <Icon type="MaterialIcons" name="menu" />
               </Button>
             </Left>
             <Body>
@@ -119,9 +119,9 @@ class GoDrivePage extends Component {
           <Left>
             <Button
               transparent
-              onPress={() => this.props.navigation.navigate("DrawerOpen")}
+              onPress={() => this.props.navigation.openDrawer()}
             >
-              <Icon name="ios-menu" />
+              <Icon type="MaterialIcons" name="menu" />
             </Button>
           </Left>
           <Body>

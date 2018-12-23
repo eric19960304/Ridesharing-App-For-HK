@@ -4,11 +4,11 @@ import {
   Container, Header, Title, Content, Button, Item, 
   Label, Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
-import { NavigationActions } from 'react-navigation';
 
 import styles from "./styles";
 import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
+import navigation from '../../helpers/navigation';
 
 class SignupPage extends Component {
 
@@ -33,7 +33,7 @@ class SignupPage extends Component {
         <Header>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
           <Body>
@@ -139,14 +139,8 @@ class SignupPage extends Component {
       });
 
       Keyboard.dismiss();
-      // reset navigation to welcomepage
-      const resetAction = NavigationActions.reset({
-        index: 0,
-        actions: [
-          NavigationActions.navigate({ routeName: 'WelcomePage'})
-        ]
-      });
-      this.props.navigation.dispatch(resetAction);
+      
+      this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
 
     }else if(response.message){
       // signup fails
