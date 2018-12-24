@@ -1,34 +1,34 @@
-const React = require("react-native");
-const { Platform, Dimensions } = React;
+import { Platform, Dimensions } from 'react-native';
 
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
 export default {
-  drawerCover: {
-    alignSelf: "stretch",
-    height: deviceHeight / 3.5,
-    width: null,
-    position: "relative",
-    marginBottom: 10
-  },
-  drawerImage: {
-    position: "absolute",
-    left: Platform.OS === "android" ? deviceWidth / 7 : deviceWidth / 8,
-    top: Platform.OS === "android" ? deviceHeight / 13 : deviceHeight / 12,
-    width: 170,
-    height: 92,
-    resizeMode: "cover"
+  content: { 
+    flex: 1, 
+    backgroundColor: "#fff", 
+    top: -1 
   },
   text: {
     fontWeight: Platform.OS === "ios" ? "500" : "400",
     fontSize: 16,
     marginLeft: 20,
   },
-  text1: {
-    fontWeight: Platform.OS === "ios" ? "500" : "400",
+  username: {
+    fontWeight: Platform.OS === "ios" ? "400" : "300",
     fontSize: 16,
-    marginLeft: 20,
+    color: 'white',
+  },
+  itemIcon:{ 
+    color: "#777", 
+    fontSize: 26, 
+    width: 30 
+  },
+  badge:{
+    borderRadius: 3,
+    height: 25,
+    width: 72,
+    backgroundColor: "#C5F442"
   },
   badgeText: {
     fontSize: Platform.OS === "ios" ? 13 : 11,
@@ -39,23 +39,19 @@ export default {
     textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 10
   },
-    flexContainer: {
-        flexDirection: 'row'
-    },
-    cell: {
-        flex: 1,
-        height: 187,
-        backgroundColor: '#111111',
-        alignItems: "center",
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10
-    },
-    Avatar: {
-      alignItems: 'center'
-    }
-
-
+  flexContainer: {
+    flexDirection: 'row'
+  },
+  avatarGroup: {
+    flex: 1,
+    height: Platform.OS === "ios"? 120: 130,
+    backgroundColor: '#111111',
+    alignItems: "center",
+    justifyContent: 'center',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10
+  },
 };

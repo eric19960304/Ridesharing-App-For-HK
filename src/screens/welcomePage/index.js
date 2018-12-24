@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ImageBackground, View, StatusBar } from "react-native";
-import { Container, Button, H2, Text, Spinner } from "native-base";
+import { Container, Button, H2, Text } from "native-base";
 
 import styles from "./styles";
 import helpers from "../../helpers";
@@ -24,47 +24,58 @@ class WelcomePage extends Component {
     return (
       <Container>
         <StatusBar barStyle="light-content" />
+      
         <ImageBackground source={launchscreenBg} style={styles.imageContainer}>
           <View style={styles.logoContainer}>
             <ImageBackground source={launchscreenLogo} style={styles.logo} />
           </View>
-          
-          {user ?
+
           <View style={styles.contentContainer}>
-            <View style={styles.titleContainer}>
-              <H2 style={styles.text}>Hello, {user.nickname}!</H2>
-            </View>
-            <View style={styles.buttonGroup}>
+
+            {user ?
+              <View  style={styles.titleContainer}>
+                <H2 style={styles.text}>Hello, {user.nickname}!</H2>
+              </View>
+              :
+              <View  style={styles.titleContainer}>
+                <H2 style={styles.text}>An Easy-to-use</H2>
+                <H2 style={styles.text}>Ridesharing App for Hong Kong</H2>
+              </View>
+            }
+
+            {user ?
+              <View style={styles.buttonGroup} >
                 <Button
-                  style={styles.goRideButton}
+                  style={styles.leftButton}
                   onPress={() => this.props.navigation.navigate('Search')}
                 >
-                  <Text>Go ride</Text>
+                  <Text>Go Ride</Text>
                 </Button>
-            </View>
+                <Button
+                  style={styles.rightButton}
+                  onPress={() => this.props.navigation.navigate('GoDrivePage')}
+                >
+                  <Text>Go Drive</Text>
+                </Button>
+              </View>
+              :
+              <View style={styles.buttonGroup} >
+                <Button
+                  style={styles.leftButton}
+                  onPress={() => this.props.navigation.navigate('LoginPage')}
+                >
+                  <Text>Login</Text>
+                </Button>
+                <Button
+                  style={styles.rightButton}
+                  onPress={() => this.props.navigation.navigate('SignupPage')}
+                >
+                  <Text>Signup</Text>
+                </Button>
+              </View>
+            }
+
           </View>
-          :
-          <View style={styles.contentContainer}>
-            <View  style={styles.titleContainer}>
-              <H2 style={styles.text}>An Easy-to-use</H2>
-              <H2 style={styles.text}>Ridesharing App for Hong Kong</H2>
-            </View>
-            <View style={styles.buttonGroup} >
-              <Button
-                style={styles.loginButton}
-                onPress={() => this.props.navigation.navigate('LoginPage')}
-              >
-                <Text>Login</Text>
-              </Button>
-              <Button
-                style={styles.signupButton}
-                onPress={() => this.props.navigation.navigate('SignupPage')}
-              >
-                <Text>Signup</Text>
-              </Button>
-            </View>
-          </View>
-          }
         </ImageBackground>
       </Container>
     );

@@ -4,11 +4,13 @@ import {
   Container, Header, Title, Content, Button, Item, Label,
   Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
-import styles from "./styles";
 
+import styles from "./styles";
 import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
 import StorageManager from "../../helpers/storageManager";
+import navigation from '../../helpers/navigation';
+
 const storageManager = StorageManager.getInstance();
 
 class LoginPage extends Component {
@@ -32,7 +34,7 @@ class LoginPage extends Component {
         <Header>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
           <Body>
@@ -115,7 +117,8 @@ class LoginPage extends Component {
       });
 
       Keyboard.dismiss();
-      this.props.navigation.navigate('WelcomePage');
+      
+      this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
 
     }else if(response.message){
       // login fails

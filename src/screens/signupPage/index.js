@@ -4,10 +4,11 @@ import {
   Container, Header, Title, Content, Button, Item, 
   Label, Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
-import styles from "./styles";
 
+import styles from "./styles";
 import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
+import navigation from '../../helpers/navigation';
 
 class SignupPage extends Component {
 
@@ -32,7 +33,7 @@ class SignupPage extends Component {
         <Header>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
           <Body>
@@ -123,7 +124,6 @@ class SignupPage extends Component {
         password,
     };
     const response = await networkClient.POST(url, body);
-
     // check return value from backend
     const successMessage = "Signup successful, please check your email for activate link";
     const failMessage = 'something go wrong, please try again later!';
@@ -139,7 +139,8 @@ class SignupPage extends Component {
       });
 
       Keyboard.dismiss();
-      this.props.navigation.navigate('LoginPage');
+      
+      this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
 
     }else if(response.message){
       // signup fails

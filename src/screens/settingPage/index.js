@@ -3,6 +3,7 @@ import {
   Container, Header, Title, Content, Text, Button,
   Icon, Left, Right, Body, Separator, ListItem, Toast
 } from "native-base";
+import navigation from '../../helpers/navigation';
 
 import styles from "./styles";
 import StorageManager from "../../helpers/storageManager";
@@ -24,9 +25,9 @@ class SettingPage extends Component {
           <Left>
             <Button
               transparent
-              onPress={() => this.props.navigation.navigate("DrawerOpen")}
+              onPress={() => this.props.navigation.openDrawer()}
             >
-              <Icon name="ios-menu" />
+              <Icon type="MaterialIcons" name="menu" />
             </Button>
           </Left>
           <Body>
@@ -40,7 +41,7 @@ class SettingPage extends Component {
             <Text>Account Management</Text>
           </Separator>
           <ListItem onPress={() => this.props.navigation.navigate('EditProfilePage')}>
-            <Text>Edit Profile (TODO)</Text>
+            <Text>Edit Profile</Text>
           </ListItem>
           <ListItem>
             <Text>Change Password (TODO)</Text>
@@ -69,7 +70,8 @@ class SettingPage extends Component {
       duration: 3000,
       position: "top"
     });
-    this.props.navigation.navigate('WelcomePage');
+
+    this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
     
   }
 }

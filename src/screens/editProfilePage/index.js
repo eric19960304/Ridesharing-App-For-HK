@@ -5,21 +5,13 @@ import {
   Container, Header, Title, Content, Button, Item, 
   Label, Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
-import styles from "./styles";
+import ImagePicker from 'expo';
 
+import styles from "./styles";
 import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
-import ImagePicker from 'react-native-image-picker';
 
 const storageManager = helpers.StorageManager.getInstance();
-const options = {
-  title: 'Select Avatar',
-  customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
-  storageOptions: {
-    skipBackup: true,
-    path: 'images',
-  },
-};
 
 class EditProfilePage extends Component {
 
@@ -27,38 +19,17 @@ class EditProfilePage extends Component {
     super(props);
     const user = storageManager.get('user');
     this.state = {
-      avatarSource: null,
+      avatarImage: null,
       email: user.email,
       password: '',
       confirmPassword: '',
       nickname: user.nickname,
     };
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
-    
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response.uri };
-    
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-    
-        this.setState({
-          avatarSource: source,
-        });
-      }
-    });
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
-  
 
   render() {
-    const { email, password, confirmPassword,nickname } = this.state;
+    const { avatarImage, email, password, confirmPassword, nickname } = this.state;
     const user = storageManager.get('user');
     
     return (
@@ -66,7 +37,7 @@ class EditProfilePage extends Component {
         <Header>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
           <Body>
@@ -76,9 +47,17 @@ class EditProfilePage extends Component {
         </Header>
 
         <Content>
+          
+          { avatarImage &&
+            <Image source={{ uri: avatarImage }} style={{ width: 200, height: 200 }} />
+          }
+          <Button
+            title="Pick an image from device"
+            onPress={this._pickImage}
+          />
+
           <Form>
-          <Image source={this.state.avatarSource} style={styles.uploadAvatar} />
-          <Item floatingLabel>
+            <Item floatingLabel>
               <Label style={styles.label}>Email</Label>
               <Input 
                 value={email} 
@@ -109,8 +88,7 @@ class EditProfilePage extends Component {
             </Item>
           </Form>
 
-          <Button 
-            block 
+          <Button block 
             style={styles.signupButton}
             onPress={this.onFormSubmit}>
             <Text>Change Information</Text>
@@ -119,6 +97,19 @@ class EditProfilePage extends Component {
       </Container>
     );
 
+  }; // end of render
+
+  _pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({ avatarImage: result.uri });
+    }
   };
 
   async onFormSubmit(){

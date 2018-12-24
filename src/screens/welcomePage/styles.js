@@ -1,5 +1,4 @@
-const React = require("react-native");
-const { Dimensions, Platform } = React;
+import { Platform, Dimensions } from 'react-native';
 const deviceHeight = Dimensions.get("window").height;
 
 export default {
@@ -39,14 +38,11 @@ export default {
     flexDirection: "row",
     alignItems: "center",
   },
-  loginButton: {
+  leftButton: {
     backgroundColor: "#6FAF98"
   },
-  signupButton: {
+  rightButton: {
     backgroundColor: "#6FAF98",
     marginLeft: 30
-  },
-  goRideButton: {
-    backgroundColor: "#6FAF98"
   }
 };
