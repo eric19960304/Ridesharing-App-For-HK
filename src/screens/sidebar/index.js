@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import helpers from "../../helpers";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 import {Avatar} from 'react-native-elements';
 import {
   Content, Text, List, ListItem, Icon,

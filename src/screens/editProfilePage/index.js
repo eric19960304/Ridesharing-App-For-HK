@@ -5,7 +5,8 @@ import {
   Container, Header, Title, Content, Button, Item, 
   Label, Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
-import ImagePicker from 'expo';
+import * as Expo from 'expo';
+import { Avatar } from 'react-native-elements';
 
 import styles from "./styles";
 import config from "../../../config";
@@ -19,18 +20,18 @@ class EditProfilePage extends Component {
     super(props);
     const user = storageManager.get('user');
     this.state = {
-      avatarImage: null,
+      avatarSource: null,
       email: user.email,
-      password: '',
-      confirmPassword: '',
       nickname: user.nickname,
+      password: '',
+      newPassword: '',
+      confirmPassword: '',
     };
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
   render() {
-    const { avatarImage, email, password, confirmPassword, nickname } = this.state;
-    const user = storageManager.get('user');
+    const { avatarSource, email, nickname, password, newPassword, confirmPassword } = this.state;
     
     return (
       <Container style={styles.container}>
@@ -48,14 +49,27 @@ class EditProfilePage extends Component {
 
         <Content>
           
-          { avatarImage &&
-            <Image source={{ uri: avatarImage }} style={{ width: 200, height: 200 }} />
+          { avatarSource ?
+            <Avatar
+              large
+              rounded
+              block
+              source={{uri: avatarSource}}
+              activeOpacity={0.7}
+              onPress={this._pickImage}
+            />
+            :
+            <Avatar
+              large
+              rounded
+              block
+              source={{uri: "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"}}
+              activeOpacity={0.7}
+              onPress={this._pickImage}
+            />
           }
-          <Button
-            title="Pick an image from device"
-            onPress={this._pickImage}
-          />
-
+          <Text>Click icon to select an image from device</Text>
+          
           <Form>
             <Item floatingLabel>
               <Label style={styles.label}>Email</Label>
@@ -71,15 +85,23 @@ class EditProfilePage extends Component {
                 onChangeText={(nickname) => this.setState({nickname})}/>
             </Item>
             <Item floatingLabel>
-              <Label style={styles.label}>Password</Label>
+              <Label style={styles.label}>Current Password</Label>
               <Input 
                 secureTextEntry 
                 value={password} 
                 onChangeText={(password) => this.setState({password})}
               />
             </Item>
+            <Item floatingLabel>
+              <Label style={styles.label}>New Password</Label>
+              <Input 
+                secureTextEntry 
+                value={newPassword} 
+                onChangeText={(newPassword) => this.setState({newPassword})}
+              />
+            </Item>
             <Item floatingLabel last>
-              <Label style={styles.label}>Confirm Password</Label>
+              <Label style={styles.label}>Confirm New Password</Label>
               <Input 
                 secureTextEntry 
                 value={confirmPassword} 
@@ -89,9 +111,9 @@ class EditProfilePage extends Component {
           </Form>
 
           <Button block 
-            style={styles.signupButton}
+            style={styles.submitButton}
             onPress={this.onFormSubmit}>
-            <Text>Change Information</Text>
+            <Text>Submit</Text>
           </Button>
         </Content>
       </Container>
@@ -100,7 +122,7 @@ class EditProfilePage extends Component {
   }; // end of render
 
   _pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let result = await Expo.ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
     });
@@ -108,14 +130,13 @@ class EditProfilePage extends Component {
     console.log(result);
 
     if (!result.cancelled) {
-      this.setState({ avatarImage: result.uri });
+      this.setState({ avatarSource: result.uri });
     }
   };
 
   async onFormSubmit(){
-    const { email, nickname, password, confirmPassword  } = this.state;
+    const { email, nickname, password, newPassword, confirmPassword  } = this.state;
     
-    // check if form input valid
     let errorMessage = null;
     if(email.length === 0){
       errorMessage = "Please enter your email.";
@@ -123,39 +144,80 @@ class EditProfilePage extends Component {
     if(nickname.length === 0){
       errorMessage = "Please enter your nickname.";
     }
-    if(password.length === 0){
-      errorMessage = "Please enter your password.";
-    }
-    if(confirmPassword.length === 0){
-      errorMessage = "Password not match, please check again.";
-    }
-    if(password !== confirmPassword){
-      errorMessage = "passwords do not match, please confirm.";
-    }
-    if(errorMessage){
-      Toast.show({
-        text: message,
-        textStyle: { textAlign: 'center' },
-        type: "warning",
-        position: "top"
-      });
-      return;
+
+    let body = {};
+    let response = null;
+
+    if(password.length === 0 && newPassword.length === 0 && confirmPassword.length === 0){
+      // not update password
+
+      if(errorMessage){
+        Toast.show({
+          text: errorMessage,
+          textStyle: { textAlign: 'center' },
+          type: "warning",
+          position: "top"
+        });
+        return;
+      }
+
+      // prepare the request body
+      for(const k in this.state){
+        if(this.state[k]) body[k] = this.state[k];
+      }
+      delete body['password'];
+      delete body['newPassword'];
+      delete body['confirmPassword'];
+
+      // send request to backend
+      response = await networkClient.POSTWithJWT(
+        config.serverURL + '/api/user/edit-profile', 
+        body
+      );
+
+    }else{
+      // update password
+      if(password.length === 0){
+        errorMessage = "Please enter your current password.";
+      }
+      if(newPassword.length === 0){
+        errorMessage = "Please enter your new password.";
+      }
+      if(confirmPassword.length === 0){
+        errorMessage = "Please enter the password again.";
+      }
+      if(newPassword !== confirmPassword){
+        errorMessage = "Two new passwords do not match, please confirm.";
+      }
+
+      if(errorMessage){
+        Toast.show({
+          text: errorMessage,
+          textStyle: { textAlign: 'center' },
+          type: "warning",
+          position: "top"
+        });
+        return;
+      }
+
+      // prepare the request body
+      for(const k in this.state){
+        if(this.state[k]) body[k] = this.state[k];
+      }
+      delete body['confirmPassword'];
+
+      response = await networkClient.POSTWithJWT(
+        config.serverURL + '/api/user/edit-profile-with-password', 
+        body
+      );
+
     }
   
-    // send request to backend
-    const url = config.serverURL + '/auth/signup';
-    const body ={
-        email: email.toLowerCase(),
-        nickname,
-        password,
-    };
-    const response = await networkClient.POST(url, body);
-
     // check return value from backend
-    const successMessage = "Signup successful, please check your email for activate link";
+    const successMessage = "Profile Update successful!";
     const failMessage = 'something go wrong, please try again later!';
     if(response.success){
-      // signup successful
+      // profile update success
 
       Toast.show({
         text: successMessage,
@@ -166,10 +228,9 @@ class EditProfilePage extends Component {
       });
 
       Keyboard.dismiss();
-      this.props.navigation.navigate('LoginPage');
 
     }else if(response.message){
-      // signup fails
+      // profile update fail
       Toast.show({
         text: response.message,
         textStyle: { textAlign: 'center' },
