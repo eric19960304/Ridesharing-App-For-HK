@@ -9,14 +9,16 @@ Prerequisite:
 
 2. Install Expo app in your smartphone
 
+3. yarn with version >=1.12.3 installed
 
-Installation:
 
-`npm install`
+Install packages:
 
-Run:
+`yarn`
 
-`npm start`
+Run the project:
+
+`yarn start`
 
 
 -----------------------
