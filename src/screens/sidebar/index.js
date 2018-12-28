@@ -1,39 +1,30 @@
 import React, { Component } from "react";
-import { Image } from "react-native";
+import helpers from "../../helpers";
+import { View } from "react-native";
+import {Avatar} from 'react-native-elements';
 import {
-  Content,
-  Text,
-  List,
-  ListItem,
-  Icon,
-  Container,
-  Left,
-  Right,
-  Badge
+  Content, Text, List, ListItem, Icon,
+  Container, Left, Right, Badge
 } from "native-base";
 import styles from "./style";
 
-const drawerCover = require("../../../assets/drawer-cover.png");
-const drawerImage = require("../../../assets/logo-threeriders.png");
+const storageManager = helpers.StorageManager.getInstance();
 const datas = [
   // avalible icon list: https://fontawesome.com/
   {
     name: "Find Ride",
     route: "Search",
     icon: "map-marker",
-    bg: "#C5F442"
   },
   {
     name: "Go Drive",
     route: "GoDrivePage",
     icon: "car",
-    bg: "#C5F442"
   },
   {
     name: "Setting",
     route: "SettingPage",
     icon: "cog",
-    bg: "#C5F442"
   },
   
 ];
@@ -48,55 +39,71 @@ class SideBar extends Component {
   }
 
   render() {
+    const user = storageManager.get('user');
     return (
       <Container>
         <Content
           bounces={false}
-          style={{ flex: 1, backgroundColor: "#fff", top: -1 }}
+          style={styles.content}
         >
-          <Image source={drawerCover} style={styles.drawerCover} />
-          <Image square style={styles.drawerImage} source={drawerImage} />
+          <View style={styles.flexContainer}>
+            <View style={styles.avatarGroup}>
+                <Avatar
+                  large
+                  rounded
+                  source={{uri: "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"}}
+                  activeOpacity={0.7}
+                  onPress={()=>this.props.navigation.navigate('EditProfilePage')}
+                />
+            </View>
 
-          <List
-            dataArray={datas}
-            renderRow={data =>
-              <ListItem
-                button
-                noBorder
-                onPress={() => this.props.navigation.navigate(data.route)}
-              >
-                <Left>
-                  <Icon
-                    active
-                    type="FontAwesome"
-                    name={data.icon}
-                    style={{ color: "#777", fontSize: 26, width: 30 }}
-                  />
-                  <Text style={styles.text}>
-                    {data.name}
-                  </Text>
-                </Left>
-                {data.types &&
-                  <Right style={{ flex: 1 }}>
-                    <Badge
-                      style={{
-                        borderRadius: 3,
-                        height: 25,
-                        width: 72,
-                        backgroundColor: data.bg
-                      }}
-                    >
-                      <Text
-                        style={styles.badgeText}
-                      >{`${data.types} Types`}</Text>
-                    </Badge>
-                  </Right>}
-              </ListItem>}
-          />
+            <View style={styles.avatarGroup}>
+              <Text style={styles.username}>
+                {user.nickname}
+              </Text>
+            </View>
+      
+          </View>
+                        
+          {this.renderList()}
+
         </Content>
       </Container>
     );
-  }
+  } // end of render
+
+  renderList(){
+    return (
+      <List
+        dataArray={datas}
+        renderRow={data =>
+          <ListItem button noBorder
+            onPress={() => this.props.navigation.navigate(data.route)}
+          >
+            <Left>
+              <Icon active
+                type="FontAwesome"
+                name={data.icon}
+                style={styles.itemIcon}
+              />
+              <Text style={styles.text}>
+                {data.name}
+              </Text>
+            </Left>
+            { data.types &&
+              <Right>
+                <Badge style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    {`${data.types} Types`}
+                  </Text>
+                </Badge>
+              </Right>
+            }
+          </ListItem>
+        }
+      />
+    )
+  } // end of renderList
 }
 
 export default SideBar;

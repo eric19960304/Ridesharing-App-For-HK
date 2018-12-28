@@ -9,7 +9,7 @@ Prerequisite:
 
 2. Install Expo app in your smartphone
 
-3. yarn with version >=1.12.3 installed
+3. Install yarn with version >=1.12.3 installed
 
 
 Install packages:

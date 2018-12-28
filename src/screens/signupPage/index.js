@@ -101,10 +101,10 @@ class SignupPage extends Component {
       errorMessage = "Please enter your password.";
     }
     if(confirmPassword.length === 0){
-      errorMessage = "Password not match, please check again.";
+      errorMessage = "Please enter your password again.";
     }
     if(password !== confirmPassword){
-      errorMessage = "passwords do not match, please confirm.";
+      errorMessage = "Two new passwords do not match, please confirm.";
     }
     if(errorMessage){
       Toast.show({

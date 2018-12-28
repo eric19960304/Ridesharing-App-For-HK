@@ -1,6 +1,7 @@
 import { Font, Permissions, AppLoading } from "expo";
 import React, { Component } from "react";
 import { StyleProvider } from "native-base";
+import { Platform } from "react-native";
 
 import App from "../App";
 import getTheme from "../theme/components";
@@ -30,11 +31,16 @@ export default class Setup extends Component {
 
     let storageManager = StorageManager.getInstance();
     let storageStatus = await storageManager.loadAllDataFromPersistence();
+    checkList.push(storageStatus);
 
     let locationPermissionStatus = await Permissions.askAsync(Permissions.LOCATION);
-    
-    checkList.push(storageStatus);
     checkList.push(locationPermissionStatus);
+
+    if(Platform.OS == 'ios'){
+      let cameraRollPermissionStatus = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      checkList.push(cameraRollPermissionStatus);
+    }
+    
     allCheckingPass = checkList.every( (b) => !!b );
 
     this.setState({ isReady: allCheckingPass });

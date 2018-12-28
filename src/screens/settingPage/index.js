@@ -40,8 +40,8 @@ class SettingPage extends Component {
           <Separator bordered>
             <Text>Account Management</Text>
           </Separator>
-          <ListItem>
-            <Text>Edit Profile (TODO)</Text>
+          <ListItem onPress={() => this.props.navigation.navigate('EditProfilePage')}>
+            <Text>Edit Profile</Text>
           </ListItem>
           <ListItem>
             <Text>Change Password (TODO)</Text>

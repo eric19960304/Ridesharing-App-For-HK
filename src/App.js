@@ -8,6 +8,7 @@ import SideBar from "./screens/sidebar";
 import Search from "./screens/search";
 import LoginPage from './screens/loginPage';
 import SignupPage from './screens/signupPage';
+import EditProfilePage from './screens/editProfilePage';
 import GoDrivePage from './screens/goDrivePage';
 
 const Drawer = createDrawerNavigator(
@@ -30,7 +31,8 @@ const AppNavigator = createStackNavigator(
     Drawer: { screen: Drawer },
     LoginPage: { screen: LoginPage },
     SignupPage: { screen: SignupPage },
-    WelcomePage: { screen: WelcomePage }
+    WelcomePage: { screen: WelcomePage },
+    EditProfilePage: { screen: EditProfilePage },
   },
   {
     initialRouteName: "WelcomePage",

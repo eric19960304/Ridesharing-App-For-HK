@@ -18,6 +18,7 @@
     "native-base": "2.8.2",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
+    "react-native-elements": "^0.19.1",
     "react-native-google-maps-directions": "^2.0.0",
     "react-native-maps": "^0.22.1",
     "react-native-maps-directions": "^1.6.0",
