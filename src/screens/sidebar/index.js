@@ -26,7 +26,15 @@ const datas = [
     route: "SettingPage",
     icon: "cog",
   },
+<<<<<<< Updated upstream
   
+=======
+  {
+    name: "Message",
+    route: "MessagePage",
+    icon: "message",
+  },
+>>>>>>> Stashed changes
 ];
 
 class SideBar extends Component {
