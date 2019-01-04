@@ -1,6 +1,7 @@
 import React from "react";
-import { Root } from "native-base";
+import { Root, Toast } from "native-base";
 import { createAppContainer, createStackNavigator, createDrawerNavigator } from "react-navigation";
+import { Notifications } from "expo";
 
 import WelcomePage from "./screens/welcomePage";
 import SettingPage from "./screens/settingPage";
@@ -42,7 +43,39 @@ const AppNavigator = createStackNavigator(
 
 const AppContainer = createAppContainer(AppNavigator);
 
-export default () =>
-  <Root>
-    <AppContainer />
-  </Root>;
+class App extends Component {
+
+  constructor(props){
+    super(props);
+  }
+
+  componentDidMount() {
+  
+    // Handle notifications that are received or selected while the app
+    // is open. If the app was closed and then opened by tapping the
+    // notification (rather than just tapping the app icon to open it),
+    // this function will fire on the next tick after the app starts
+    // with the notification data.
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+  }
+
+  _handleNotification = (notification) => {
+    Toast.show({
+      text: notification.body,
+      textStyle: { textAlign: 'center' },
+      type: "success",
+      duration: 5000,
+      position: "bottom"
+    });
+  };
+
+  render() {
+    return (
+      <Root>
+        <AppContainer />
+      </Root>
+    )
+  }
+}
+
+export default App;
