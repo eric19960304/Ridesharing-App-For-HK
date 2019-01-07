@@ -10,11 +10,13 @@ import LoginPage from './screens/loginPage';
 import SignupPage from './screens/signupPage';
 import EditProfilePage from './screens/editProfilePage';
 import GoDrivePage from './screens/goDrivePage';
+import MessagePage from './screens/messagePage';
 
 const Drawer = createDrawerNavigator(
   {
     Search: { screen: Search },
     GoDrivePage: { screen: GoDrivePage },
+    MessagePage: { screen: MessagePage},
     SettingPage: { screen: SettingPage },
   },
   {
