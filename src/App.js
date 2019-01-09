@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { Root, Toast } from "native-base";
 import { createAppContainer, createStackNavigator, createDrawerNavigator } from "react-navigation";
 import { Notifications } from "expo";
@@ -43,7 +43,7 @@ const AppNavigator = createStackNavigator(
 
 const AppContainer = createAppContainer(AppNavigator);
 
-class App extends Component {
+export default class App extends Component {
 
   constructor(props){
     super(props);
@@ -61,11 +61,11 @@ class App extends Component {
 
   _handleNotification = (notification) => {
     Toast.show({
-      text: notification.body,
+      text: notification.data.message,
       textStyle: { textAlign: 'center' },
       type: "success",
       duration: 5000,
-      position: "bottom"
+      position: "top"
     });
   };
 
@@ -77,5 +77,3 @@ class App extends Component {
     )
   }
 }
-
-export default App;
