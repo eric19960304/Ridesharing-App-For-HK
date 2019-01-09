@@ -30,17 +30,15 @@ class MessagePage extends React.Component {
     this.storeMessages = this.storeMessages.bind(this);
 
     // Creating the socket-client instance will automatically connect to the server.
-    this.socket = SocketIOClient('http://169.254.29.66/socket');
+    this.socket = SocketIOClient('http://169.254.29.66');
     this.determineUser();
     this.socket.on('message', this.onReceivedMessage);
   }
 
   determineUser() {
-    if (this.state.user == null) {
-      const USER = storageManager.get('user').email;
-      this.state.user = {'id': USER};
-      this.socket.emit('userJoined', {'text': USER});
-    }
+    const USER = storageManager.get('user').email;
+    this.state.user = {'id': USER};
+    this.socket.emit('userJoined', {'text': USER});
   }
 
   onReceivedMessage(messages) {
@@ -87,6 +85,8 @@ class MessagePage extends React.Component {
   // Helper functions
   storeMessages(messages) {
     this.setState((previousState) => {
+      console.log(messages);
+      console.log(previousState.messages);
       return {
         messages: GiftedChat.append(previousState.messages, messages),
       };
