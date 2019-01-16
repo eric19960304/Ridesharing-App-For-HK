@@ -40,6 +40,7 @@ class SideBar extends Component {
 
   render() {
     const user = storageManager.get('user');
+    const avatarSource = user.avatarSource;
     return (
       <Container>
         <Content
@@ -48,14 +49,27 @@ class SideBar extends Component {
         >
           <View style={styles.flexContainer}>
             <View style={styles.avatarGroup}>
-                <Avatar
-                  large
-                  rounded
-                  source={{uri: "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"}}
-                  activeOpacity={0.7}
-                  onPress={()=>this.props.navigation.navigate('EditProfilePage')}
-                />
+              { avatarSource ?
+              <Avatar
+                large
+                rounded
+                source={{uri: 'data:image/png;base64,'+user.avatarSource}}
+                activeOpacity={0.7}
+                onPress={()=>this.props.navigation.navigate('EditProfilePage')}
+              />
+              :
+              <Avatar
+                large
+                rounded
+                source={{uri: "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"}}
+                activeOpacity={0.7}
+                onPress={()=>this.props.navigation.navigate('EditProfilePage')}
+              />
+              }
             </View>
+
+
+
 
             <View style={styles.avatarGroup}>
               <Text style={styles.username}>

@@ -8,6 +8,11 @@ export default {
   submitButton: { 
     margin: 15
   },
+  avatarGroup:{
+    padding:20,
+    alignItems: "center",
+    justifyContent: 'center',
+  },
   label: {
     paddingTop: Platform.OS=="android"? 5 : 0
   },

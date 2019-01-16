@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Keyboard } from 'react-native';
+import { View } from "react-native";
 import helpers from "../../helpers";
 import {
   Container, Header, Title, Content, Button, Item, 
@@ -13,26 +14,26 @@ import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
 
 const storageManager = helpers.StorageManager.getInstance();
-
 class EditProfilePage extends Component {
 
   constructor(props){
     super(props);
     const user = storageManager.get('user');
     this.state = {
-      avatarSource: null,
+      avatarSource: user.avatarSource,
       email: user.email,
       nickname: user.nickname,
       password: '',
       newPassword: '',
       confirmPassword: '',
     };
+    //console.log(user.avatarSource);
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
   render() {
     const { avatarSource, email, nickname, password, newPassword, confirmPassword } = this.state;
-    
+    const user = storageManager.get('user');
     return (
       <Container style={styles.container}>
         <Header>
@@ -48,19 +49,19 @@ class EditProfilePage extends Component {
         </Header>
 
         <Content>
-          
-          { avatarSource ?
+        <View style={styles.avatarGroup}>
+        { avatarSource ?
             <Avatar
-              large
+              xlarge
               rounded
               block
-              source={{uri: avatarSource}}
+              source={{uri: 'data:image/png;base64,'+avatarSource}}
               activeOpacity={0.7}
               onPress={this._pickImage}
             />
             :
             <Avatar
-              large
+              xlarge
               rounded
               block
               source={{uri: "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"}}
@@ -69,6 +70,8 @@ class EditProfilePage extends Component {
             />
           }
           <Text>Click icon to select an image from device</Text>
+        </View>
+          
           
           <Form>
             <Item floatingLabel>
@@ -77,7 +80,7 @@ class EditProfilePage extends Component {
                 value={email} 
                 onChangeText={(email) => this.setState({email})}/>
             </Item>
-
+                    
             <Item floatingLabel>
               <Label style={styles.label}>Nickname</Label>
               <Input 
@@ -109,6 +112,7 @@ class EditProfilePage extends Component {
               />
             </Item>
           </Form>
+                   
 
           <Button block 
             style={styles.submitButton}
@@ -122,21 +126,21 @@ class EditProfilePage extends Component {
   }; // end of render
 
   _pickImage = async () => {
-    let result = await Expo.ImagePicker.launchImageLibraryAsync({
+    let profilePicResult = await Expo.ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
+      base64: true,
     });
-
-    console.log(result);
-
-    if (!result.cancelled) {
-      this.setState({ avatarSource: result.uri });
+    let profilePicResult64=profilePicResult.base64;
+    //let avatarSource=profilePicResult64;
+    if (!profilePicResult64.cancelled) {
+      this.setState({ avatarSource: profilePicResult64 });
     }
+    //console.log(avatarSource);
   };
 
   async onFormSubmit(){
-    const { email, nickname, password, newPassword, confirmPassword  } = this.state;
-    
+    const { avatarSource, email, nickname, password, newPassword, confirmPassword } = this.state;
     let errorMessage = null;
     if(email.length === 0){
       errorMessage = "Please enter your email.";
@@ -168,13 +172,15 @@ class EditProfilePage extends Component {
       delete body['password'];
       delete body['newPassword'];
       delete body['confirmPassword'];
-
+      
+      //console.log(body);
+      storageManager.update('user',body);
       // send request to backend
       response = await networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile', 
         body
       );
-
+      
     }else{
       // update password
       if(password.length === 0){
@@ -205,12 +211,12 @@ class EditProfilePage extends Component {
         if(this.state[k]) body[k] = this.state[k];
       }
       delete body['confirmPassword'];
-
+      //console.log(body);
       response = await networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile-with-password', 
         body
       );
-
+    
     }
   
     // check return value from backend
