@@ -13,7 +13,6 @@ import MapViewDirections from 'react-native-maps-directions';
 import styles from './styles';
 import networkClient from "../../helpers/networkClient";
 import config from "../../../config";
-import { TextInput } from 'react-native-gesture-handler';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const { width, height } = Dimensions.get('window');
@@ -38,15 +37,14 @@ class Search extends Component {
 
     this.state = {
       loading: true,
-      startPointMarker: null,
-      endPointMarker: null,
+      markers: [],
       GOOGLE_MAP_API_KEY: null,
     };
 
     this.mapView = null;
 
     // this.resetMarker = this.resetMarker.bind(this);
-    //this.setStartPointMarker = this.setStartPointMarker.bind(this);
+    this.setMarker = this.setMarker.bind(this);
     //this.setEndPointMarker = this.setEndPointMarker.bind(this);
   }
 
@@ -70,36 +68,25 @@ class Search extends Component {
     });
   }
 
-  setStartPointMarker(data, details){
+  setMarker(data, details){
     //console.log(data, details);
-    console.log(details.geometry.location);
-    var newCoordinate = new Object({ latitude: details.geometry.location.lat ,longitude: details.geometry.location.lng });
-    this.setState({
-      startPointMarker: 
-        {
-          coordinate: newCoordinate,
-          key: markerId++,
-          color: randomColor(),
-        }
-    });
-    
-    //this.GooglePlacesAutocomplete.editable = false
-  }
+    if(this.state.markers.length <= 1){
+      //console.log(details.geometry.location);
+      
+      var newCoordinate = new Object({ latitude: details.geometry.location.lat ,longitude: details.geometry.location.lng });
+      this.setState({
+        markers: [
+          ...this.state.markers,
+          {
+            coordinate: newCoordinate,
+            key: markerId++,
+            color: randomColor(),
+          }
+        ]
+      });
 
-  setEndPointMarker(data, details){
-    //console.log(data, details);
-    console.log(details.geometry.location);
-    var newCoordinate = new Object({ latitude: details.geometry.location.lat ,longitude: details.geometry.location.lng });
-    this.setState({
-      endPointMarker: 
-        {
-          coordinate: newCoordinate,
-          key: markerId++,
-          color: randomColor(),
-        },
-    });
-    
-    //this.GooglePlacesAutocomplete.editable = false
+      this.GooglePlacesRef.setAddressText("");
+    }
   }
 
   // onMapPress(e) {
@@ -117,10 +104,10 @@ class Search extends Component {
   //   }
   // }
   
-  // resetMarker(){
-  //   this.setState({ markers: [] });
-  //   markerId = 0;
-  // }
+  resetMarker(){
+    this.setState({ markers: [] });
+    markerId = 0;
+  }
 
   render() {
 
@@ -182,26 +169,18 @@ class Search extends Component {
               ref={c => this.mapView = c}
             >
 
-              {this.state.startPointMarker != null &&
+              {this.state.markers.map(marker => (
                 <Marker
-                  key={this.state.startPointMarker.key}
-                  coordinate={this.state.startPointMarker.coordinate}
-                  pinColor={this.state.startPointMarker.color}
+                  key={marker.key}
+                  coordinate={marker.coordinate}
+                  pinColor={marker.color}
                 />
-              }
+              ))}
 
-              {this.state.endPointMarker != null &&
-                <Marker
-                  key={this.state.endPointMarker.key}
-                  coordinate={this.state.endPointMarker.coordinate}
-                  pinColor={this.state.endPointMarker.color}
-                />
-              }
-
-              {this.state.startPointMarker != null && this.state.endPointMarker != null &&
+              {this.state.markers.length == 2 &&
                 <MapViewDirections
-                  origin={this.state.startPointMarker.coordinate}
-                  destination={this.state.endPointMarker.coordinate}
+                  origin={this.state.markers[0].coordinate}
+                  destination={this.state.markers[1].coordinate}
                   apikey={GOOGLE_MAP_API_KEY}
                   strokeWidth={3}
                   strokeColor="#1E90FF"
@@ -229,8 +208,8 @@ class Search extends Component {
                 listViewDisplayed='false'   // true/false/undefined
                 fetchDetails={true}
                 renderDescription={row => row.description} // custom description render
-                onPress={(data, details = null) => this.setStartPointMarker(data, details)}
-                
+                onPress={(data, details = null) => this.setMarker(data, details)}
+                editable={ this.state.markers.length == 2 ? false : true }
                 getDefaultValue={() => ''}
                 
                 query={{
@@ -259,8 +238,10 @@ class Search extends Component {
                 // predefinedPlaces={[homePlace, workPlace]}
 
                 debounce={1000} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-                // renderLeftButton={()  => <Text>Start point</Text>}
-                // renderRightButton={() => <Button onPress={}><Text>Submit</Text></Button>}
+                renderLeftButton={()  => this.state.markers.length == 0 && <Text>Start point</Text> || this.state.markers.length == 1 && <Text>End point</Text>}
+                renderRightButton={() => this.state.markers.length == 2 && <Button onPress={() => this.resetMarker()}><Text>Reset</Text></Button>}
+
+                ref={(instance) => { this.GooglePlacesRef = instance }}
               />
             </View>
           </View>
