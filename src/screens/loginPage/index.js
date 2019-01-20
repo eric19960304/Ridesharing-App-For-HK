@@ -65,6 +65,11 @@ class LoginPage extends Component {
           <Button block style={styles.loginButton} onPress={this.onFormSubmit}>
             <Text>Login In</Text>
           </Button>
+
+          <Button block style={styles.loginButton} onPress={() => this.props.navigation.navigate('ResetPasswordPage')}>
+            <Text>Forgot Password</Text>
+          </Button>
+
         </Content>
       </Container>
     );

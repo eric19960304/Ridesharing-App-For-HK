@@ -12,6 +12,7 @@ import SignupPage from './screens/signupPage';
 import EditProfilePage from './screens/editProfilePage';
 import GoDrivePage from './screens/goDrivePage';
 import MessagePage from './screens/messagePage';
+import ResetPasswordPage from './screens/resetPasswordPage';
 
 const Drawer = createDrawerNavigator(
   {
@@ -35,6 +36,7 @@ const AppNavigator = createStackNavigator(
     LoginPage: { screen: LoginPage },
     SignupPage: { screen: SignupPage },
     WelcomePage: { screen: WelcomePage },
+    ResetPasswordPage: { screen: ResetPasswordPage },
     EditProfilePage: { screen: EditProfilePage },
   },
   {
