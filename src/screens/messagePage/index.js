@@ -21,7 +21,7 @@ class MessagePage extends React.Component {
 
     this.state = {
       messages: [],
-      user: { 'id': email } 
+      userEmail: { 'id': email } 
     };
 
     this.onReceivedMessage = this.onReceivedMessage.bind(this);
@@ -29,17 +29,14 @@ class MessagePage extends React.Component {
     this.storeMessages = this.storeMessages.bind(this);
 
     this.socket = SocketIOClient(config.serverURL);
+    this.socket.emit('userJoined', {'text': email});
+    this.socket.on('message', this.onReceivedMessage);
   }
 
   render() {
     // Creating the socket-client instance will automatically connect to the server.
-    const email = storageManager.get('user').email;
     
-    this.socket.emit('userJoined', {'text': email});
-    this.socket.on('message', this.onReceivedMessage);
-
-    const { user } = this.state;
-    console.log(user);
+    const { userEmail } = this.state;
 
     return (
       <Container>
@@ -61,7 +58,8 @@ class MessagePage extends React.Component {
         <GiftedChat
           messages={this.state.messages}
           onSend={this.onSend}
-          user={user}
+          user={userEmail}
+          
         />
 
       </Container>
@@ -78,6 +76,8 @@ class MessagePage extends React.Component {
     if(messages.length > 0){
       
       let m = Object.assign({}, messages[0]);
+      m.messageId = m._id;
+      delete m._id;
 
       this.socket.emit('message', m);
       this.storeMessages(messages);
