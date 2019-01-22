@@ -1,18 +1,16 @@
 import React from 'react';
-import { 
-  View, 
-  AsyncStorage 
-} from 'react-native';
 import {
-  Container, Header, Title, Content, Text, Button,
+  Container, Header, Title, Button,
   Icon, Left, Right, Body
 } from "native-base";
+
 import styles from "./styles";
 import SocketIOClient from 'socket.io-client';
 import { GiftedChat } from 'react-native-gifted-chat';
-import helpers from "../../helpers";
+import { StorageManager } from "../../helpers";
+import config from '../config';
 
-const storageManager = helpers.StorageManager.getInstance();
+const storageManager = StorageManager.getInstance();
 
 class MessagePage extends React.Component {
 
@@ -30,25 +28,9 @@ class MessagePage extends React.Component {
     this.storeMessages = this.storeMessages.bind(this);
 
     // Creating the socket-client instance will automatically connect to the server.
-    this.socket = SocketIOClient('http://169.254.29.66');
+    this.socket = SocketIOClient(config.serverURL);
     this.determineUser();
     this.socket.on('message', this.onReceivedMessage);
-  }
-
-  determineUser() {
-    const USER = storageManager.get('user').email;
-    this.state.user = {'id': USER};
-    this.socket.emit('userJoined', {'text': USER});
-  }
-
-  onReceivedMessage(messages) {
-    this.storeMessages(messages);
-  }
-
-  onSend(messages=[]) {
-    //sendMsg = 
-    this.socket.emit('message', messages[0]);
-    this.storeMessages(messages);
   }
 
   render() {
@@ -81,6 +63,22 @@ class MessagePage extends React.Component {
     );
 
   };
+
+  determineUser() {
+    const USER = storageManager.get('user').email;
+    this.state.user = {'id': USER};
+    this.socket.emit('userJoined', {'text': USER});
+  }
+
+  onReceivedMessage(messages) {
+    this.storeMessages(messages);
+  }
+
+  onSend(messages=[]) {
+    //sendMsg = 
+    this.socket.emit('message', messages[0]);
+    this.storeMessages(messages);
+  }
 
   // Helper functions
   storeMessages(messages) {
