@@ -4,6 +4,7 @@ import {
   Container, Header, Title, Content, Button, Item, Label,
   Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
+import { Notifications } from "expo";
 
 import styles from "./styles";
 import config from "../../../config";
@@ -64,6 +65,11 @@ class LoginPage extends Component {
           <Button block style={styles.loginButton} onPress={this.onFormSubmit}>
             <Text>Login In</Text>
           </Button>
+
+          <Button block style={styles.loginButton} onPress={() => this.props.navigation.navigate('ResetPasswordPage')}>
+            <Text>Forgot Password</Text>
+          </Button>
+
         </Content>
       </Container>
     );
@@ -116,8 +122,9 @@ class LoginPage extends Component {
         duration: 3000
       });
 
+      this.registerForPushNotification();
+
       Keyboard.dismiss();
-      
       this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
 
     }else if(response.message){
@@ -139,6 +146,30 @@ class LoginPage extends Component {
     }
 
   } // end of onFormSubmit
+
+  registerForPushNotification = async () => {
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExpoPushTokenAsync();
+    const user = storageManager.get('user');
+    if(user){
+      // POST the token to your backend server from where you can retrieve it to send push notifications.
+      return fetch(config.serverURL + '/user/push-token', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: {
+            value: token,
+          },
+          user: {
+            email: user.email,
+          },
+        }),
+      });
+    }
+  }
 
 }
 
