@@ -168,6 +168,12 @@ class EditProfilePage extends Component {
       delete body['password'];
       delete body['newPassword'];
       delete body['confirmPassword'];
+      /*
+      post body format: {
+        email: string,
+        nickname: string
+      }
+      */
 
       // send request to backend
       response = await networkClient.POSTWithJWT(
@@ -205,6 +211,14 @@ class EditProfilePage extends Component {
         if(this.state[k]) body[k] = this.state[k];
       }
       delete body['confirmPassword'];
+      /*
+      post body format: {
+        email: string,
+        nickname: string,
+        password: string,
+        newPassword: string
+      }
+      */
 
       response = await networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile-with-password', 

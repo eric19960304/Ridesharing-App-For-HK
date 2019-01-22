@@ -24,7 +24,7 @@ const datas = [
   {
     name: "Message",
     route: "MessagePage",
-    icon: "map-marker",
+    icon: "comments",
   },
   {
     name: "Setting",
