@@ -21,7 +21,7 @@ class MessagePage extends React.Component {
 
     this.state = {
       messages: [],
-      userEmail: { 'id': email } 
+      userEmail: { _id: email } 
     };
 
     this.onReceivedMessage = this.onReceivedMessage.bind(this);
@@ -29,7 +29,7 @@ class MessagePage extends React.Component {
     this.storeMessages = this.storeMessages.bind(this);
 
     this.socket = SocketIOClient(config.serverURL);
-    this.socket.emit('userJoined', {'text': email});
+    this.socket.emit('userJoined', { 'text': email });
     this.socket.on('message', this.onReceivedMessage);
   }
 

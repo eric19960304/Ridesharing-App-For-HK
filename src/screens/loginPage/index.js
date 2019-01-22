@@ -160,9 +160,7 @@ class LoginPage extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          token: {
-            value: token,
-          },
+          pushToken: token,
           user: {
             email: user.email,
           },
