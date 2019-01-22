@@ -27,12 +27,14 @@ class MessagePage extends React.Component {
     this.onReceivedMessage = this.onReceivedMessage.bind(this);
     this.onSend = this.onSend.bind(this);
     this.storeMessages = this.storeMessages.bind(this);
+
+    this.socket = SocketIOClient(config.serverURL);
   }
 
   render() {
     // Creating the socket-client instance will automatically connect to the server.
     const email = storageManager.get('user').email;
-    this.socket = SocketIOClient(config.serverURL);
+    
     this.socket.emit('userJoined', {'text': email});
     this.socket.on('message', this.onReceivedMessage);
 
