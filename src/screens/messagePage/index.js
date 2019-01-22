@@ -74,6 +74,7 @@ class MessagePage extends React.Component {
   onSend(messages=[]) {
     //sendMsg
     if(messages.length > 0){
+      const userEmail = storageManager.get('user').email;
       
       let m = Object.assign({}, messages[0]);
       m.messageId = m._id;
