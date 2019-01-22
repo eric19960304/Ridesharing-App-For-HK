@@ -7,8 +7,8 @@ import {
 import styles from "./styles";
 import SocketIOClient from 'socket.io-client';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { StorageManager } from "../../helpers";
-import config from '../config';
+import StorageManager from "../../helpers/storageManager";
+import config from '../../../config';
 
 const storageManager = StorageManager.getInstance();
 
@@ -16,27 +16,28 @@ class MessagePage extends React.Component {
 
   constructor(props) {
     super(props);
-  
+
+    const email = storageManager.get('user').email;
+
     this.state = {
       messages: [],
-      user: null
+      user: { 'id': email } 
     };
 
-    this.determineUser = this.determineUser.bind(this);
     this.onReceivedMessage = this.onReceivedMessage.bind(this);
     this.onSend = this.onSend.bind(this);
     this.storeMessages = this.storeMessages.bind(this);
-
-    
   }
 
   render() {
-    const user = (this.state.user || -1 );
-
     // Creating the socket-client instance will automatically connect to the server.
+    const email = storageManager.get('user').email;
     this.socket = SocketIOClient(config.serverURL);
-    this.determineUser();
+    this.socket.emit('userJoined', {'text': email});
     this.socket.on('message', this.onReceivedMessage);
+
+    const { user } = this.state;
+    console.log(user);
 
     return (
       <Container>
@@ -65,12 +66,6 @@ class MessagePage extends React.Component {
     );
 
   };
-
-  determineUser() {
-    const USER = storageManager.get('user').email;
-    this.state.user = {'id': USER};
-    this.socket.emit('userJoined', {'text': USER});
-  }
 
   onReceivedMessage(messages) {
     this.storeMessages(messages);

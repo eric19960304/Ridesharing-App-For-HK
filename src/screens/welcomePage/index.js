@@ -3,9 +3,9 @@ import { ImageBackground, View, StatusBar } from "react-native";
 import { Container, Button, H2, Text } from "native-base";
 
 import styles from "./styles";
-import helpers from "../../helpers";
+import StorageManager from "../../helpers/storageManager";
 
-const storageManager = helpers.StorageManager.getInstance();
+const storageManager = StorageManager.getInstance();
 const launchscreenBg = require("../../../assets/launchscreen-bg.png");
 const launchscreenLogo = require("../../../assets/logo-threeriders.png");
 

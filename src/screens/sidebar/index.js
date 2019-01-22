@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import helpers from "../../helpers";
+import StorageManager from "../../helpers/storageManager";
 import { View } from "react-native";
 import {Avatar} from 'react-native-elements';
 import {
@@ -8,7 +8,7 @@ import {
 } from "native-base";
 import styles from "./style";
 
-const storageManager = helpers.StorageManager.getInstance();
+const storageManager = StorageManager.getInstance();
 const datas = [
   // avalible icon list: https://fontawesome.com/
   {

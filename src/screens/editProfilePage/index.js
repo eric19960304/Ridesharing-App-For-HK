@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Keyboard } from 'react-native';
 import { View } from "react-native";
-import helpers from "../../helpers";
 import {
   Container, Header, Title, Content, Button, Item, 
   Label, Input, Body, Left, Right, Icon, Form, Text, Toast
@@ -12,8 +11,9 @@ import { Avatar } from 'react-native-elements';
 import styles from "./styles";
 import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
+import StorageManager from '../../helpers/storageManager';
 
-const storageManager = helpers.StorageManager.getInstance();
+const storageManager = StorageManager.getInstance();
 class EditProfilePage extends Component {
 
   constructor(props){
