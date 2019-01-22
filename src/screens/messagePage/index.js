@@ -27,14 +27,16 @@ class MessagePage extends React.Component {
     this.onSend = this.onSend.bind(this);
     this.storeMessages = this.storeMessages.bind(this);
 
-    // Creating the socket-client instance will automatically connect to the server.
-    this.socket = SocketIOClient(config.serverURL);
-    this.determineUser();
-    this.socket.on('message', this.onReceivedMessage);
+    
   }
 
   render() {
     const user = (this.state.user || -1 );
+
+    // Creating the socket-client instance will automatically connect to the server.
+    this.socket = SocketIOClient(config.serverURL);
+    this.determineUser();
+    this.socket.on('message', this.onReceivedMessage);
 
     return (
       <Container>
@@ -75,9 +77,16 @@ class MessagePage extends React.Component {
   }
 
   onSend(messages=[]) {
-    //sendMsg = 
-    this.socket.emit('message', messages[0]);
-    this.storeMessages(messages);
+    //sendMsg
+    if(messages.length > 0){
+      
+      let m = Object.assign({}, messages[0]);
+      m.messageId = m._id;
+      delete m._id;
+
+      this.socket.emit('message', m);
+      this.storeMessages(messages);
+    }
   }
 
   // Helper functions
