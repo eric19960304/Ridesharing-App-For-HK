@@ -22,11 +22,15 @@ const datas = [
     icon: "car",
   },
   {
+    name: "Message",
+    route: "MessagePage",
+    icon: "comments",
+  },
+  {
     name: "Setting",
     route: "SettingPage",
     icon: "cog",
   },
-  
 ];
 
 class SideBar extends Component {

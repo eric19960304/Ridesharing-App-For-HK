@@ -32,5 +32,8 @@ export default {
     flexDirection: 'row',
     marginVertical: 20,
     backgroundColor: 'transparent',
+  },
+  viewContainer:{
+    flex: 1
   }
 };

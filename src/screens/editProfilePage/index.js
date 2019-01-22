@@ -175,6 +175,14 @@ class EditProfilePage extends Component {
       
       //console.log(body);
       storageManager.update('user',body);
+      
+      /*
+      post body format: {
+        email: string,
+        nickname: string
+      }
+      */
+
       // send request to backend
       response = await networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile', 
@@ -212,6 +220,15 @@ class EditProfilePage extends Component {
       }
       delete body['confirmPassword'];
       //console.log(body);
+      /*
+      post body format: {
+        email: string,
+        nickname: string,
+        password: string,
+        newPassword: string
+      }
+      */
+
       response = await networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile-with-password', 
         body
