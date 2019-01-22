@@ -24,13 +24,12 @@ class MessagePage extends React.Component {
       userEmail: { _id: email } 
     };
 
-    this.onReceivedMessage = this.onReceivedMessage.bind(this);
-    this.onSend = this.onSend.bind(this);
     this.storeMessages = this.storeMessages.bind(this);
+    this.onSend = this.onSend.bind(this);
 
     this.socket = SocketIOClient(config.serverURL);
     this.socket.emit('userJoined', { 'email': email });
-    this.socket.on('message', this.onReceivedMessage);
+    this.socket.on('message', this.storeMessages);
   }
 
   render() {
@@ -67,14 +66,9 @@ class MessagePage extends React.Component {
 
   };
 
-  onReceivedMessage(messages) {
-    this.storeMessages(messages);
-  }
-
   onSend(messages=[]) {
     //sendMsg
     if(messages.length > 0){
-      const userEmail = storageManager.get('user').email;
       
       let m = Object.assign({}, messages[0]);
       m.messageId = m._id;
@@ -85,10 +79,10 @@ class MessagePage extends React.Component {
     }
   }
 
-  // Helper functions
-  storeMessages(newMessage=[]) {
+  storeMessages(messages) {
+    console.log(messages);
     this.setState( (prevState) => ({
-      messages: GiftedChat.append(prevState.messages, newMessage)
+      messages: GiftedChat.append(prevState.messages, messages)
     }));
   }
 
