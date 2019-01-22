@@ -36,7 +36,7 @@ class MessagePage extends React.Component {
   render() {
     // Creating the socket-client instance will automatically connect to the server.
     
-    const { userEmail } = this.state;
+    const { userEmail, messages } = this.state;
 
     return (
       <Container>
@@ -56,10 +56,10 @@ class MessagePage extends React.Component {
         </Header>
 
         <GiftedChat
-          messages={this.state.messages}
+          messages={messages}
           onSend={this.onSend}
           user={userEmail}
-          
+
         />
 
       </Container>
@@ -85,14 +85,10 @@ class MessagePage extends React.Component {
   }
 
   // Helper functions
-  storeMessages(messages) {
-    this.setState((previousState) => {
-      console.log(messages);
-      console.log(previousState.messages);
-      return {
-        messages: GiftedChat.append(previousState.messages, messages),
-      };
-    });
+  storeMessages(newMessage=[]) {
+    this.setState( (prevState) => ({
+      messages: GiftedChat.append(prevState.messages, newMessage)
+    }));
   }
 
 }

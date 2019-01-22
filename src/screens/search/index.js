@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import {
   Container, Header, Title, Content, Text, Button,
-  Icon, Left, Right, Body, Spinner
+  Icon, Left, Right, Body, Spinner, Toast
 } from "native-base";
 
 import MapView, { Marker } from 'react-native-maps';
@@ -46,6 +46,8 @@ class Search extends Component {
     // this.resetMarker = this.resetMarker.bind(this);
     this.setMarker = this.setMarker.bind(this);
     //this.setEndPointMarker = this.setEndPointMarker.bind(this);
+    this.renderResetButton = this.renderResetButton.bind(this);
+    this.submitRideRequest = this.submitRideRequest.bind(this);
   }
 
   componentWillMount() {
@@ -114,6 +116,8 @@ class Search extends Component {
     const { width, height } = Dimensions.get('window');
     const { GOOGLE_MAP_API_KEY } = this.state;
 
+    const numberOfMarkers = this.state.markers.length;
+
     if(this.state.loading){
       return (
       <Container>
@@ -142,7 +146,6 @@ class Search extends Component {
     }
 
     return (
-      
       <Container>
         <Header>
           <Left>
@@ -177,7 +180,7 @@ class Search extends Component {
                 />
               ))}
 
-              {this.state.markers.length == 2 &&
+              {numberOfMarkers == 2 &&
                 <MapViewDirections
                   origin={this.state.markers[0].coordinate}
                   destination={this.state.markers[1].coordinate}
@@ -198,59 +201,110 @@ class Search extends Component {
               }
               
             </MapView>
+
+              <View style={styles.viewContainer}>
+                <GooglePlacesAutocomplete
+                  placeholder='Search'
+                  minLength={2} // minimum length of text to search
+                  autoFocus={false}
+                  returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+                  listViewDisplayed='false'   // true/false/undefined
+                  fetchDetails={true}
+                  renderDescription={row => row.description} // custom description render
+                  onPress={(data, details = null) => this.setMarker(data, details)}
+                  editable={ numberOfMarkers == 2 ? false : true }
+                  getDefaultValue={() => ''}
+                  
+                  query={{
+                    // available options: https://developers.google.com/places/web-service/autocomplete
+                    key: 'AIzaSyCMF65pXtPakOIuMSSkuTxeJ5AYQ-17bt8',
+                    language: 'en', // language of the results
+                    // secondary_text: 'Hong Kong'
+                    // types: 'HK' // default: 'geocode'
+                    components: 'country:hk'
+                  }}
+                  
+                  styles={{ 
+                    textInputContainer: {
+                      width: '100%'
+                    },
+                    listView: {
+                      backgroundColor: 'white',
+                    },
+                    description: {
+                      fontWeight: 'bold',
+                    },
+                  }}
+                  
+                  // currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
+                  // currentLocationLabel="Current location"
+                  // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+                  // predefinedPlaces={[homePlace, workPlace]}
+
+                  debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+                  renderLeftButton={()  => numberOfMarkers == 0 && <Text>Start point</Text> || numberOfMarkers == 1 && <Text>End point</Text>}
+                  renderRightButton={
+                    () => numberOfMarkers == 2 && this.renderResetButton()}
+
+                  ref={(instance) => { this.GooglePlacesRef = instance }}
+                />
+
+              </View>
+
+              <View style={styles.buttonContainer}>
+                <View style={styles.bubble}>
+                { numberOfMarkers == 2 &&
+                  <Button title="Submit" onPress={this.submitRideRequest}>
+                    <Text>Submit</Text>
+                  </Button>
+                }
+                </View>
+              </View>
             
-            <View style={styles.viewContainer}>
-              <GooglePlacesAutocomplete
-                placeholder='Search'
-                minLength={2} // minimum length of text to search
-                autoFocus={false}
-                returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-                listViewDisplayed='false'   // true/false/undefined
-                fetchDetails={true}
-                renderDescription={row => row.description} // custom description render
-                onPress={(data, details = null) => this.setMarker(data, details)}
-                editable={ this.state.markers.length == 2 ? false : true }
-                getDefaultValue={() => ''}
-                
-                query={{
-                  // available options: https://developers.google.com/places/web-service/autocomplete
-                  key: 'AIzaSyCMF65pXtPakOIuMSSkuTxeJ5AYQ-17bt8',
-                  language: 'en', // language of the results
-                  // secondary_text: 'Hong Kong'
-                  // types: 'HK' // default: 'geocode'
-                }}
-                
-                styles={{ 
-                  textInputContainer: {
-                    width: '100%'
-                  },
-                  listView: {
-                    backgroundColor: 'white',
-                  },
-                  description: {
-                    fontWeight: 'bold',
-                  },
-                }}
-                
-                // currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
-                // currentLocationLabel="Current location"
-                // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-                // predefinedPlaces={[homePlace, workPlace]}
 
-                debounce={1000} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-                renderLeftButton={()  => this.state.markers.length == 0 && <Text>Start point</Text> || this.state.markers.length == 1 && <Text>End point</Text>}
-                renderRightButton={() => this.state.markers.length == 2 && <Button onPress={() => this.resetMarker()}><Text>Reset</Text></Button>}
-
-                ref={(instance) => { this.GooglePlacesRef = instance }}
-              />
-            </View>
           </View>
           
         </Content>
       </Container>
     );
   }
+
+  renderResetButton(){
+    return (
+      <Button onPress={
+        () => this.resetMarker()
+      }>
+        <Text>Reset</Text>
+      </Button>
+    )
+  }
+
+  async submitRideRequest(){
+    const { markers } = this.state;
+    console.log('markers:', markers);
+
+    let body = {
+      startLocation: markers[0].coordinate,
+      endLocation: markers[1].coordinate,
+      timestamp: new Date()
+    };
+
+    const response = await networkClient.POSTWithJWT(
+      config.serverURL + '/api/rider/real-time-ride-request',
+      body
+    );
+    console.log(response);
+    Toast.show({
+      text: 'Request sent, matching ...',
+      textStyle: { textAlign: 'center' },
+      type: "success",
+      position: "top",
+    });
+  }
+
 }
+
+
 
 const Loading = () => (
   <View style={styles.container}>
