@@ -78,8 +78,6 @@ class MessagePage extends React.Component {
     if(messages.length > 0){
       
       let m = Object.assign({}, messages[0]);
-      m.messageId = m._id;
-      delete m._id;
 
       this.socket.emit('message', m);
       this.storeMessages(messages);
