@@ -149,24 +149,15 @@ class LoginPage extends Component {
 
   registerForPushNotification = async () => {
     // Get the token that uniquely identifies this device
-    let token = await Notifications.getExpoPushTokenAsync();
     const user = storageManager.get('user');
-    if(user){
-      // POST the token to your backend server from where you can retrieve it to send push notifications.
-      return fetch(config.serverURL + '/user/push-token', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          pushToken: token,
-          user: {
-            email: user.email,
-          },
-        }),
-      });
-    }
+    let token = await Notifications.getExpoPushTokenAsync();
+    let body = {
+      pushToken: token,
+      user: {
+        email: user.email
+      }
+    };
+    networkClient.POSTWithJWT(config.serverURL + '/api/user/push-token', body);
   }
 
 }

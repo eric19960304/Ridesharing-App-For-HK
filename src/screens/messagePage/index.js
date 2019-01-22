@@ -29,7 +29,7 @@ class MessagePage extends React.Component {
     this.storeMessages = this.storeMessages.bind(this);
 
     this.socket = SocketIOClient(config.serverURL);
-    this.socket.emit('userJoined', { 'text': email });
+    this.socket.emit('userJoined', { 'email': email });
     this.socket.on('message', this.onReceivedMessage);
   }
 
