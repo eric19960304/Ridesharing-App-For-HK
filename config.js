@@ -1,3 +1,3 @@
 export default {
-    serverURL: 'https://demo.coder.faith'
+    serverURL: 'http://192.168.1.254'
 };
