@@ -38,13 +38,14 @@ class Search extends Component {
     this.state = {
       loading: true,
       markers: [],
+      mapRegion: null,
       GOOGLE_MAP_API_KEY: null,
     };
 
     this.mapView = null;
 
     // this.resetMarker = this.resetMarker.bind(this);
-    this.setMarker = this.setMarker.bind(this);
+    //this.setMarker = this.setMarker.bind(this);
     //this.setEndPointMarker = this.setEndPointMarker.bind(this);
     this.renderResetButton = this.renderResetButton.bind(this);
     this.submitRideRequest = this.submitRideRequest.bind(this);
@@ -70,41 +71,57 @@ class Search extends Component {
     });
   }
 
-  setMarker(data, details){
+  // setMarker(data, details){
+  //   //console.log(data, details);
+  //   if(this.state.markers.length <= 1){
+  //     //console.log(details.geometry.location);
+      
+  //     var newCoordinate = new Object({ latitude: details.geometry.location.lat ,longitude: details.geometry.location.lng });
+  //     this.setState({
+  //       markers: [
+  //         ...this.state.markers,
+  //         {
+  //           coordinate: newCoordinate,
+  //           key: markerId++,
+  //           color: randomColor(),
+  //         }
+  //       ]
+  //     });
+
+  //     this.GooglePlacesRef.setAddressText("");
+  //   }
+  // }
+
+  changeMapRegion(data, details){
     //console.log(data, details);
     if(this.state.markers.length <= 1){
-      //console.log(details.geometry.location);
-      
-      var newCoordinate = new Object({ latitude: details.geometry.location.lat ,longitude: details.geometry.location.lng });
       this.setState({
-        markers: [
-          ...this.state.markers,
-          {
-            coordinate: newCoordinate,
-            key: markerId++,
-            color: randomColor(),
-          }
-        ]
+        mapRegion: {
+          latitude: details.geometry.location.lat, 
+          longitude: details.geometry.location.lng,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005 * ratio,
+        }
       });
 
       this.GooglePlacesRef.setAddressText("");
     }
   }
 
-  // onMapPress(e) {
-  //   if(this.state.markers.length <= 1){
-  //     this.setState({
-  //       markers: [
-  //         ...this.state.markers,
-  //         {
-  //           coordinate: e.nativeEvent.coordinate,
-  //           key: markerId++,
-  //           color: randomColor(),
-  //         },
-  //       ],
-  //     });
-  //   }
-  // }
+  onMapPress(e) {
+    if(this.state.markers.length <= 1){
+      this.setState({
+        markers: [
+          ...this.state.markers,
+          {
+            coordinate: e.nativeEvent.coordinate,
+            key: markerId++,
+            color: randomColor(),
+          },
+        ],
+      });
+    }
+  }
   
   resetMarker(){
     this.setState({ markers: [] });
@@ -167,8 +184,9 @@ class Search extends Component {
 
             <MapView 
               style={styles.map} 
-              initialRegion={coordinates} 
-              //onPress={(e) => this.onMapPress(e)}
+              initialRegion={coordinates}
+              region = {this.state.mapRegion ||undefined} 
+              onPress={(e) => this.onMapPress(e)}
               ref={c => this.mapView = c}
             >
 
@@ -211,7 +229,7 @@ class Search extends Component {
                   listViewDisplayed='false'   // true/false/undefined
                   fetchDetails={true}
                   renderDescription={row => row.description} // custom description render
-                  onPress={(data, details = null) => this.setMarker(data, details)}
+                  onPress={(data, details = null) => this.changeMapRegion(data, details)}
                   editable={ numberOfMarkers == 2 ? false : true }
                   getDefaultValue={() => ''}
                   
@@ -261,7 +279,6 @@ class Search extends Component {
                 </View>
               </View>
             
-
           </View>
           
         </Content>
