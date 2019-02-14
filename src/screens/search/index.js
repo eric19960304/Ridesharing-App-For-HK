@@ -220,7 +220,6 @@ class Search extends Component {
               
             </MapView>
 
-              <View style={styles.viewContainer}>
                 <GooglePlacesAutocomplete
                   placeholder='Search'
                   minLength={2} // minimum length of text to search
@@ -267,19 +266,20 @@ class Search extends Component {
                   ref={(instance) => { this.GooglePlacesRef = instance }}
                 />
 
-              </View>
-
-              <View style={styles.buttonContainer}>
-                <View style={styles.bubble}>
-                { numberOfMarkers == 2 &&
-                  <Button title="Submit" onPress={this.submitRideRequest}>
-                    <Text>Submit</Text>
-                  </Button>
-                }
+              { numberOfMarkers == 2 &&
+                <View style={styles.buttonContainer}>
+                  <View style={styles.bubble}>
+                  
+                    <Button title="Submit" onPress={this.submitRideRequest}>
+                      <Text>Submit</Text>
+                    </Button>
+                  
+                  </View>
                 </View>
-              </View>
-            
+              }
+
           </View>
+          
           
         </Content>
       </Container>

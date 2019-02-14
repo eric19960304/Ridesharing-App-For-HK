@@ -17,12 +17,14 @@ import config from "../../../config";
 
 const { width, height } = Dimensions.get('window');
 const ratio = width / height;
-const coordinates = {
+
+const initialCoordinates = {
   latitude: 22.28552, 
   longitude: 114.15769,
   latitudeDelta: 0.5,
   longitudeDelta: 0.5 * ratio,
 };
+
 class GoDrivePage extends Component {
 
   constructor(props) {
@@ -34,6 +36,12 @@ class GoDrivePage extends Component {
 
     this.mapView = null;
     this.driverLocation = null;
+
+    this.displayRegion = {
+      ...initialCoordinates,
+      latitudeDelta: 0.05,
+    longitudeDelta: 0.05 * ratio,
+    }
   }
 
   componentWillMount() {
@@ -54,56 +62,6 @@ class GoDrivePage extends Component {
 
   componentWillUnmount() {
     clearInterval(this._updateLocationWorker);
-  }
-
-  displayLocationNotEnabledWarning = ()=>{
-    Toast.show({
-      text: 'Please enable location service',
-      textStyle: { textAlign: 'center' },
-      type: "warning"
-    });
-  }
-
-  updateLocation = () => {
-    Location.getCurrentPositionAsync({})
-    .then( (data)=>{
-      if(data){
-        if(!this.driverLocation){
-          this.driverLocation = data;
-          this.sendLocationToServer(data);
-        }
-
-        let prevLocation = Object.assign({}, this.driverLocation);
-        const prevLat = parseFloat(prevLocation.coords.latitude);
-        const prevLong = parseFloat(prevLocation.coords.longitude);
-        const currentLat = parseFloat(data.coords.latitude);
-        const currentLong = parseFloat(data.coords.longitude);
-        let latDiff = Math.abs(currentLat - prevLat);
-        let longDiff = Math.abs(currentLong - prevLong);
-        if(latDiff+longDiff > 0.001){
-          this.driverLocation = data;
-          this.sendLocationToServer(data);
-        }
-      }
-    })
-    .catch((err)=>{
-      console.log('err:', err);
-    });
-  };
-
-  sendLocationToServer(data){
-    const url = config.serverURL + '/api/driver/location-update';
-    const body ={
-      location: data.coords,
-      timestamp: data.timestamp,
-    };
-    networkClient.POSTWithJWT(url, body)
-    .then((result)=>{
-      console.log(result);
-    })
-    .catch(()=>{
-      console.log('err:', err);
-    });
   }
 
   render() {
@@ -159,12 +117,14 @@ class GoDrivePage extends Component {
           <View style={{ width, height }}>
 
             <MapView 
-              initialRegion={coordinates} 
+              initialRegion={initialCoordinates} 
               style={styles.map} 
-              scrollEnabled={Platform.OS=="android"?true:false}
+              scrollEnabled={false}
               showsUserLocation={true}
+              onUserLocationChange={(event) => this.userLocationChanged(event)}
+              onRegionChange={this.regionChanged}
               followsUserLocation={true}
-              showsMyLocationButton={ Platform.OS=="android"?true:false}
+              showsMyLocationButton={true}
               ref={c => this.mapView = c}
             >
 
@@ -174,8 +134,84 @@ class GoDrivePage extends Component {
         </Content>
       </Container>
     );
+  } // end of render
+
+  userLocationChanged = (event) => {
+    const newRegion = event.nativeEvent.coordinate;
+
+    this.displayRegion = {
+      ...this.displayRegion,
+      latitude: newRegion.latitude,
+      longitude: newRegion.longitude
+    };
+
+    if(this.mapView) {
+      this.mapView.animateToRegion(
+        this.displayRegion, 
+        1000
+      );
+    }
   }
-}
+
+  regionChanged = (event) => {
+    this.displayRegion = {
+        ...this.displayRegion,
+        longitudeDelta: event.longitudeDelta,
+        latitudeDelta: event.latitudeDelta,
+    }
+  }
+
+  displayLocationNotEnabledWarning = ()=>{
+    Toast.show({
+      text: 'Please enable location service',
+      textStyle: { textAlign: 'center' },
+      type: "warning"
+    });
+  }
+
+  updateLocation = () => {
+    Location.getCurrentPositionAsync({})
+    .then( (data)=>{
+      if(data){
+        if(!this.driverLocation){
+          this.driverLocation = data;
+          this.sendLocationToServer(data);
+        }
+
+        let prevLocation = Object.assign({}, this.driverLocation);
+        const prevLat = parseFloat(prevLocation.coords.latitude);
+        const prevLong = parseFloat(prevLocation.coords.longitude);
+        const currentLat = parseFloat(data.coords.latitude);
+        const currentLong = parseFloat(data.coords.longitude);
+        let latDiff = Math.abs(currentLat - prevLat);
+        let longDiff = Math.abs(currentLong - prevLong);
+        if(latDiff+longDiff > 0.001){
+          this.driverLocation = data;
+          this.sendLocationToServer(data);
+        }
+      }
+    })
+    .catch((err)=>{
+      console.log('err:', err);
+    });
+  };
+
+  sendLocationToServer = (data) => {
+    const url = config.serverURL + '/api/driver/location-update';
+    const body ={
+      location: data.coords,
+      timestamp: data.timestamp,
+    };
+    networkClient.POSTWithJWT(url, body)
+    .then((result)=>{
+      console.log(result);
+    })
+    .catch(()=>{
+      console.log('err:', err);
+    });
+  }
+
+} // end of class 
 
 const Loading = () => (
   <View style={styles.container}>

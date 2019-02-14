@@ -17,18 +17,15 @@ class MessagePage extends React.Component {
   constructor(props) {
     super(props);
 
-    const email = storageManager.get('user').email;
+    const userEmail = storageManager.get('user').email;
 
     this.state = {
       messages: [],
-      userEmail: { _id: email } 
+      userEmail: { _id: userEmail } 
     };
 
-    this.storeMessages = this.storeMessages.bind(this);
-    this.onSend = this.onSend.bind(this);
-
     this.socket = SocketIOClient(config.serverURL);
-    this.socket.emit('userJoined', { 'email': email });
+    this.socket.emit('userJoined', { 'email': userEmail });
     this.socket.on('message', this.storeMessages);
   }
 
@@ -66,7 +63,7 @@ class MessagePage extends React.Component {
 
   };
 
-  onSend(messages=[]) {
+  onSend = (messages=[]) => {
     //sendMsg
     if(messages.length > 0){
       
@@ -79,7 +76,7 @@ class MessagePage extends React.Component {
     }
   }
 
-  storeMessages(messages) {
+  storeMessages = (messages) => {
     console.log(messages);
     this.setState( (prevState) => ({
       messages: GiftedChat.append(prevState.messages, messages)
