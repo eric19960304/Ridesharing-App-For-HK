@@ -12,11 +12,6 @@ Prerequisite:
 3. Install yarn with version >=1.12.3 installed
 
 
-Recommandation:
-
-1. Use Linux-like system to execute all the command, for Windows user, please use Ubuntu subsystem
-
-
 Install packages:
 
 `yarn`
