@@ -64,7 +64,6 @@ class SettingPage extends Component {
       text: "Logout Successful.",
       textStyle: { textAlign: 'center' },
       type: "success",
-      duration: 3000,
       position: "top"
     });
 

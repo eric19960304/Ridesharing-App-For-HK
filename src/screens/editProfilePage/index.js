@@ -247,7 +247,6 @@ class EditProfilePage extends Component {
         textStyle: { textAlign: 'center' },
         type: "success",
         position: "top",
-        duration: 3000
       });
 
       Keyboard.dismiss();

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Container, Header, Title, Button,
-  Icon, Left, Right, Body
+  Icon, Left, Right, Body, Toast, Text
 } from "native-base";
 
 import styles from "./styles";
@@ -17,22 +17,24 @@ class MessagePage extends React.Component {
   constructor(props) {
     super(props);
 
-    const userEmail = storageManager.get('user').email;
+    const userId = storageManager.get('user').userId;
 
     this.state = {
       messages: [],
-      userEmail: { _id: userEmail } 
+      userId: { _id: userId } 
     };
 
     this.socket = SocketIOClient(config.serverURL);
-    this.socket.emit('userJoined', { 'email': userEmail });
+    this.socket.emit('userJoined', { 'userId': userId });
     this.socket.on('message', this.storeMessages);
   }
 
   render() {
     // Creating the socket-client instance will automatically connect to the server.
     
-    const { userEmail, messages } = this.state;
+    const { userId, messages } = this.state;
+
+    console.log(userId);
 
     return (
       <Container>
@@ -51,33 +53,48 @@ class MessagePage extends React.Component {
           <Right />
         </Header>
 
-        <GiftedChat
-          messages={messages}
-          onSend={this.onSend}
-          user={userEmail}
-
-        />
+        { 
+          messages.length > 0 ?
+          <GiftedChat
+            messages={messages}
+            // onSend={this.onSend}
+            user={userId}
+            renderInputToolbar={()=>null}
+          />
+          :
+          <Text>You do not have any message.</Text>
+        }
+        
 
       </Container>
     );
 
   };
 
-  onSend = (messages=[]) => {
-    //sendMsg
-    if(messages.length > 0){
+  // onSend = (messages=[]) => {
+  //   //sendMsg
+  //   if(messages.length > 0){
       
-      let m = Object.assign({}, messages[0]);
-      m.messageId = m._id;
-      delete m._id;
+  //     let m = Object.assign({}, messages[0]);
+  //     m.messageId = m._id;
+  //     delete m._id;
 
-      this.socket.emit('message', m);
-      this.storeMessages(messages);
-    }
-  }
+  //     this.socket.emit('message', m);
+  //     this.storeMessages(messages);
+  //   }
+  // }
 
   storeMessages = (messages) => {
-    console.log(messages);
+    if(!this.props.navigation.isFocused()){
+      Toast.show({
+        text: 'New message: ' + messages.text,
+        textStyle: { textAlign: 'center' },
+        type: "success",
+        position: "top",
+        duration: 3000
+      });
+    }
+
     this.setState( (prevState) => ({
       messages: GiftedChat.append(prevState.messages, messages)
     }));

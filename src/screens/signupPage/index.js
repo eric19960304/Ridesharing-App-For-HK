@@ -135,7 +135,7 @@ class SignupPage extends Component {
         textStyle: { textAlign: 'center' },
         type: "success",
         position: "top",
-        duration: 3000
+        duration: 5000
       });
 
       Keyboard.dismiss();

@@ -119,13 +119,12 @@ class LoginPage extends Component {
         textStyle: { textAlign: 'center' },
         type: 'success',
         position: "top",
-        duration: 3000
       });
 
       this.registerForPushNotification();
 
       Keyboard.dismiss();
-      this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
+      this.props.navigation.dispatch(navigation.resetToDrawer); // reset navigation to welcomepage
 
     }else if(response.message){
       // login fails

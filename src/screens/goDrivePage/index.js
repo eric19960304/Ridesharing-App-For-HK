@@ -42,6 +42,7 @@ class GoDrivePage extends Component {
       latitudeDelta: 0.05,
     longitudeDelta: 0.05 * ratio,
     }
+
   }
 
   componentWillMount() {
@@ -165,30 +166,42 @@ class GoDrivePage extends Component {
     Toast.show({
       text: 'Please enable location service',
       textStyle: { textAlign: 'center' },
-      type: "warning"
+      type: "warning",
+      position: "top"
     });
   }
 
   updateLocation = () => {
+
+    if(!this.props.navigation.isFocused()){
+      return;
+    }
+
     Location.getCurrentPositionAsync({})
     .then( (data)=>{
       if(data){
-        if(!this.driverLocation){
-          this.driverLocation = data;
-          this.sendLocationToServer(data);
-        }
 
-        let prevLocation = Object.assign({}, this.driverLocation);
-        const prevLat = parseFloat(prevLocation.coords.latitude);
-        const prevLong = parseFloat(prevLocation.coords.longitude);
-        const currentLat = parseFloat(data.coords.latitude);
-        const currentLong = parseFloat(data.coords.longitude);
-        let latDiff = Math.abs(currentLat - prevLat);
-        let longDiff = Math.abs(currentLong - prevLong);
-        if(latDiff+longDiff > 0.001){
-          this.driverLocation = data;
-          this.sendLocationToServer(data);
-        }
+        // /* send location to server only if the location is different in certain degree */
+        // if(!this.driverLocation){
+        //   this.driverLocation = data;
+        //   this.sendLocationToServer(data);
+        // }
+
+        // let prevLocation = Object.assign({}, this.driverLocation);
+        // const prevLat = parseFloat(prevLocation.coords.latitude);
+        // const prevLong = parseFloat(prevLocation.coords.longitude);
+        // const currentLat = parseFloat(data.coords.latitude);
+        // const currentLong = parseFloat(data.coords.longitude);
+        // let latDiff = Math.abs(currentLat - prevLat);
+        // let longDiff = Math.abs(currentLong - prevLong);
+        // if(latDiff+longDiff > 0.001){
+        //   this.driverLocation = data;
+        //   this.sendLocationToServer(data);
+        // }
+
+        // send location to server anyway to update the timestamp
+        this.sendLocationToServer(data);
+
       }
     })
     .catch((err)=>{

@@ -26,10 +26,6 @@ const coordinates = {
 };
 let markerId = 0;
 
-function randomColor() {
-  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-}
-
 class Search extends Component {
 
   constructor(props) {
@@ -91,42 +87,6 @@ class Search extends Component {
   //     this.GooglePlacesRef.setAddressText("");
   //   }
   // }
-
-  changeMapRegion(data, details){
-    //console.log(data, details);
-    if(this.state.markers.length <= 1){
-      this.setState({
-        mapRegion: {
-          latitude: details.geometry.location.lat, 
-          longitude: details.geometry.location.lng,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005 * ratio,
-        }
-      });
-
-      this.GooglePlacesRef.setAddressText("");
-    }
-  }
-
-  onMapPress(e) {
-    if(this.state.markers.length <= 1){
-      this.setState({
-        markers: [
-          ...this.state.markers,
-          {
-            coordinate: e.nativeEvent.coordinate,
-            key: markerId++,
-            color: randomColor(),
-          },
-        ],
-      });
-    }
-  }
-  
-  resetMarker(){
-    this.setState({ markers: [] });
-    markerId = 0;
-  }
 
   render() {
 
@@ -319,7 +279,48 @@ class Search extends Component {
     });
   }
 
+  changeMapRegion(data, details){
+    //console.log(data, details);
+    if(this.state.markers.length <= 1){
+      this.setState({
+        mapRegion: {
+          latitude: details.geometry.location.lat, 
+          longitude: details.geometry.location.lng,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005 * ratio,
+        }
+      });
+  
+      this.GooglePlacesRef.setAddressText("");
+    }
+  }
+  
+  onMapPress(e) {
+    if(this.state.markers.length <= 1){
+      this.setState({
+        markers: [
+          ...this.state.markers,
+          {
+            coordinate: e.nativeEvent.coordinate,
+            key: markerId++,
+            color: this.randomColor(),
+          },
+        ],
+      });
+    }
+  }
+  
+  resetMarker(){
+    this.setState({ markers: [] });
+    markerId = 0;
+  }
+
+  randomColor(){
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  }
 }
+
+
 
 
 

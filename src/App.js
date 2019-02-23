@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Root, Toast } from "native-base";
 import { createAppContainer, createStackNavigator, createDrawerNavigator } from "react-navigation";
 import { Notifications } from "expo";
+import StorageManager from "./helpers/storageManager";
 
 import WelcomePage from "./screens/welcomePage";
 import SettingPage from "./screens/settingPage";
@@ -13,6 +14,8 @@ import EditProfilePage from './screens/editProfilePage';
 import GoDrivePage from './screens/goDrivePage';
 import MessagePage from './screens/messagePage';
 import ResetPasswordPage from './screens/resetPasswordPage';
+
+const storageManager = StorageManager.getInstance();
 
 const Drawer = createDrawerNavigator(
   {
@@ -30,22 +33,14 @@ const Drawer = createDrawerNavigator(
   }
 );
 
-const AppNavigator = createStackNavigator(
-  {
-    Drawer: { screen: Drawer },
-    LoginPage: { screen: LoginPage },
-    SignupPage: { screen: SignupPage },
-    WelcomePage: { screen: WelcomePage },
-    ResetPasswordPage: { screen: ResetPasswordPage },
-    EditProfilePage: { screen: EditProfilePage },
-  },
-  {
-    initialRouteName: "WelcomePage",
-    headerMode: "none"
-  }
-);
-
-const AppContainer = createAppContainer(AppNavigator);
+const stackPages = {
+  Drawer: { screen: Drawer },
+  LoginPage: { screen: LoginPage },
+  SignupPage: { screen: SignupPage },
+  WelcomePage: { screen: WelcomePage },
+  ResetPasswordPage: { screen: ResetPasswordPage },
+  EditProfilePage: { screen: EditProfilePage },
+};
 
 export default class App extends Component {
 
@@ -68,12 +63,25 @@ export default class App extends Component {
       text: notification.data.message,
       textStyle: { textAlign: 'center' },
       type: "success",
-      duration: 5000,
-      position: "top"
+      position: "top",
+      duration: 3000,
     });
   };
 
   render() {
+
+    const user = storageManager.get('user');
+
+    const AppNavigator = createStackNavigator(
+      stackPages,
+      {
+        initialRouteName: user ? "MessagePage" : "WelcomePage",
+        headerMode: "none"
+      }
+    );
+
+    const AppContainer = createAppContainer(AppNavigator);
+
     return (
       <Root>
         <AppContainer />

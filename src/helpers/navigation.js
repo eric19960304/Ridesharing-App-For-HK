@@ -6,8 +6,12 @@ const resetToWelcomePage = StackActions.reset({
   actions: [NavigationActions.navigate({ routeName: 'WelcomePage' })],
 });
 
-console.log(resetToWelcomePage);
+const resetToDrawer = StackActions.reset({
+  index: 0,
+  actions: [NavigationActions.navigate({ routeName: 'Drawer' })],
+});
 
 export default {
-  resetToWelcomePage
+  resetToWelcomePage,
+  resetToDrawer
 };
