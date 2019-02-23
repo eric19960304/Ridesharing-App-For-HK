@@ -12,7 +12,7 @@ Prerequisite:
 3. Install yarn with version >=1.12.3 installed
 
 
-Install packages:
+Install packages (under project's root directory):
 
 `yarn`
 
