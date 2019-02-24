@@ -201,17 +201,7 @@ class Search extends Component {
                     components: 'country:hk'
                   }}
                   
-                  styles={{ 
-                    textInputContainer: {
-                      width: '100%'
-                    },
-                    listView: {
-                      backgroundColor: 'white',
-                    },
-                    description: {
-                      fontWeight: 'bold',
-                    },
-                  }}
+                  styles={styles.searchBar}
                   
                   // currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
                   // currentLocationLabel="Current location"

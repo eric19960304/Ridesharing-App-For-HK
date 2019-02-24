@@ -35,5 +35,16 @@ export default {
   },
   viewContainer:{
     flex: 1
+  },
+  searchBar: { 
+    textInputContainer: {
+      width: '100%'
+    },
+    listView: {
+      backgroundColor: 'white',
+    },
+    description: {
+      fontWeight: 'bold',
+    },
   }
 };
