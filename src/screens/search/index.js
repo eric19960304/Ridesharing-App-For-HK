@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   View,
   Dimensions,
+  Image,
 } from 'react-native';
 import {
   Container, Header, Title, Content, Text, Button,
@@ -15,6 +16,8 @@ import networkClient from "../../helpers/networkClient";
 import config from "../../../config";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
+import carMarkerImage from "../../../assets/logo.png";
+
 const { width, height } = Dimensions.get('window');
 
 const ratio = width / height;
@@ -25,7 +28,7 @@ const coordinates = {
   longitudeDelta: 0.5 * ratio,
 };
 let markerId = 0;
-
+let driverId = 0;
 class Search extends Component {
 
   constructor(props) {
@@ -34,6 +37,7 @@ class Search extends Component {
     this.state = {
       loading: true,
       markers: [],
+      drivers: [],
       mapRegion: null,
       GOOGLE_MAP_API_KEY: null,
     };
@@ -65,28 +69,46 @@ class Search extends Component {
     .catch( (error)=>{
       console.log(error);
     });
+
+    this._updateDriverLocationWorker = setInterval(this.getDriverLocation, 5000);
   }
 
-  // setMarker(data, details){
-  //   //console.log(data, details);
-  //   if(this.state.markers.length <= 1){
-  //     //console.log(details.geometry.location);
-      
-  //     var newCoordinate = new Object({ latitude: details.geometry.location.lat ,longitude: details.geometry.location.lng });
-  //     this.setState({
-  //       markers: [
-  //         ...this.state.markers,
-  //         {
-  //           coordinate: newCoordinate,
-  //           key: markerId++,
-  //           color: randomColor(),
-  //         }
-  //       ]
-  //     });
+  componentDidMount(){
+    this.getDriverLocation();
+  }
 
-  //     this.GooglePlacesRef.setAddressText("");
-  //   }
-  // }
+  componentWillUnmount() {
+    clearInterval(this._updateDriverLocationWorker);
+  }
+
+  getDriverLocation = () => {
+    if(!this.props.navigation.isFocused()){
+      return;
+    }
+
+    const url = config.serverURL + '/api/driver/get-all-drivers-location';
+    const body = {};
+    networkClient.POSTWithJWT(url, body)
+    .then((locationList)=>{
+      this.setState({ drivers: [] });
+      driverId = 0
+      //console.log('location list: ', locationList);
+      for (i in locationList){
+        this.setState({
+          drivers: [
+            ...this.state.drivers,
+            {
+              coordinate: {latitude: locationList[i].location.latitude, longitude: locationList[i].location.longitude},
+              key: 'driver' + driverId++,
+            }
+          ]
+        });
+      }
+    })
+    .catch(()=>{
+      console.log('err:', err);
+    });
+  }
 
   render() {
 
@@ -155,6 +177,16 @@ class Search extends Component {
                   key={marker.key}
                   coordinate={marker.coordinate}
                   pinColor={marker.color}
+                />
+              ))}
+
+
+              {this.state.drivers.map(driver => (
+                <Marker
+                  image={carMarkerImage}
+                  key={driver.key}
+                  coordinate={driver.coordinate}
+                  style={{width: 10, height: 10}}
                 />
               ))}
 
