@@ -18,5 +18,12 @@ export default {
   },
   avatarImage: {
     width: 200, height: 200
+  },
+  switch:{
+    marginTop:17,
+    marginLeft:17,
+    //justifyContent: 'center',
+    //alignItems: 'stretch',
+    flexDirection: 'row',
   }
 };

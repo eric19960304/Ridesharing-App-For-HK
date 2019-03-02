@@ -4,7 +4,7 @@ import { Container, Button, H2, Text } from "native-base";
 
 import styles from "./styles";
 
-const launchscreenBg = require("../../../assets/launchscreen-bg.png");
+const launchscreenBg = require("../../../assets/launchscreen-bg.jpg");
 const launchscreenLogo = require("../../../assets/logo-threeriders.png");
 
 class WelcomePage extends Component {

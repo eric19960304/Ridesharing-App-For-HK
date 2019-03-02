@@ -6,14 +6,18 @@ import {
   Label, Input, Body, Left, Right, Icon, Form, Text, Toast
 } from "native-base";
 import * as Expo from 'expo';
+
 import { Avatar } from 'react-native-elements';
+import { Switch } from 'react-native'
 
 import styles from "./styles";
 import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
 import StorageManager from '../../helpers/storageManager';
+import MyView from './MyView';
 
 const storageManager = StorageManager.getInstance();
+
 class EditProfilePage extends Component {
 
   constructor(props){
@@ -26,13 +30,20 @@ class EditProfilePage extends Component {
       password: '',
       newPassword: '',
       confirmPassword: '',
+      isDriver: user.isDriver,
+      carplate: user.carplate,
+      contact: user.contact,
     };
+    
     //console.log(user.avatarSource);
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
+
+
+ 
   render() {
-    const { avatarSource, email, nickname, password, newPassword, confirmPassword } = this.state;
+    const { avatarSource, email, nickname, password, newPassword, confirmPassword,isDriver,carplate,contact } = this.state;
     const user = storageManager.get('user');
     return (
       <Container style={styles.container}>
@@ -87,6 +98,36 @@ class EditProfilePage extends Component {
                 value={nickname} 
                 onChangeText={(nickname) => this.setState({nickname})}/>
             </Item>
+            
+            
+            <View style={styles.switch}>
+               <Text style={{color: 'grey',fontSize: 17}}>I am also a driver</Text>
+              <Switch  
+              value = {isDriver}
+              onValueChange = {(value) =>this.setState({isDriver: value})}/>
+            </View>
+            
+           
+            <MyView hide={!this.state.isDriver}>
+            <Item floatingLabel>
+              <Label style={styles.label}>Car Plate</Label>
+              <Input 
+                value={carplate} 
+                onChangeText={(carplate) => this.setState({carplate})}
+              />
+            </Item>
+            </MyView>
+            
+            <Item floatingLabel>
+              <Label style={styles.label}>Contact Number</Label>
+              <Input 
+                value={contact} 
+                onChangeText={(contact) => this.setState({contact})}
+              />
+            </Item>
+            
+            
+
             <Item floatingLabel>
               <Label style={styles.label}>Current Password</Label>
               <Input 
@@ -167,7 +208,7 @@ class EditProfilePage extends Component {
 
       // prepare the request body
       for(const k in this.state){
-        if(this.state[k]) body[k] = this.state[k];
+        if(this.state[k] !== null  && this.state[k] !== '' && this.state[k] !==undefined) body[k] = this.state[k];
       }
       delete body['password'];
       delete body['newPassword'];
