@@ -39,13 +39,7 @@ class EditProfilePage extends Component {
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
-  toggleSwitch = (value) => {
-    //onValueChange of the switch this function will be called
-    this.setState({isDriver: value});
-    
-    //state changes according to switch
-    //which will result in re-render the text
- }
+
 
  
   render() {
@@ -109,12 +103,8 @@ class EditProfilePage extends Component {
             <View style={styles.switch}>
                <Text style={{color: 'grey',fontSize: 17}}>I am also a driver</Text>
               <Switch  
-              activeText={'On'}
-              inActiveText={'Off'}
-              backgroundActive={'green'}
-              backgroundInactive={'grey'}
-            onValueChange = {this.toggleSwitch}
-            value = {isDriver}/>
+              value = {isDriver}
+              onValueChange = {(value) =>this.setState({isDriver: value})}/>
             </View>
             
            
