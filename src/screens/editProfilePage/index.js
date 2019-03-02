@@ -208,7 +208,7 @@ class EditProfilePage extends Component {
 
       // prepare the request body
       for(const k in this.state){
-        if(this.state[k]) body[k] = this.state[k];
+        if(this.state[k]!=null && this.state[k]!='' ) body[k] = this.state[k];
       }
       delete body['password'];
       delete body['newPassword'];
