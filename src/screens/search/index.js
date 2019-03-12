@@ -7,6 +7,7 @@ import {
   Container, Header, Title, Content, Text, Button,
   Icon, Left, Right, Body, Spinner, Toast
 } from "native-base";
+import { Location, } from 'expo';
 
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -37,6 +38,12 @@ class Search extends Component {
       mapRegion: null,
       GOOGLE_MAP_API_KEY: null,
     };
+
+    this.displayRegion = {
+      ...coordinates,
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.05 * ratio,
+    }
 
     this.mapView = null;
 
@@ -91,9 +98,10 @@ class Search extends Component {
   render() {
 
     const { width, height } = Dimensions.get('window');
-    const { GOOGLE_MAP_API_KEY } = this.state;
+    const { GOOGLE_MAP_API_KEY, isMoveWithUser } = this.state;
 
     const numberOfMarkers = this.state.markers.length;
+    
 
     if(this.state.loading){
       return (
@@ -145,8 +153,11 @@ class Search extends Component {
             <MapView 
               style={styles.map} 
               initialRegion={coordinates}
-              region = {this.state.mapRegion ||undefined} 
+              showsMyLocationButton={true}
+              region = {this.state.mapRegion || undefined} 
+              showsUserLocation={true}
               onPress={(e) => this.onMapPress(e)}
+              onMapReady={ this.moveToUserLocation }
               ref={c => this.mapView = c}
             >
 
@@ -185,7 +196,7 @@ class Search extends Component {
                   minLength={2} // minimum length of text to search
                   autoFocus={false}
                   returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-                  listViewDisplayed='false'   // true/false/undefined
+                  listViewDisplayed={false}   // true/false/undefined
                   fetchDetails={true}
                   renderDescription={row => row.description} // custom description render
                   onPress={(data, details = null) => this.changeMapRegion(data, details)}
@@ -209,7 +220,10 @@ class Search extends Component {
                   // predefinedPlaces={[homePlace, workPlace]}
 
                   debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-                  renderLeftButton={()  => numberOfMarkers == 0 && <Text>Start point</Text> || numberOfMarkers == 1 && <Text>End point</Text>}
+                  // renderLeftButton={
+                  //   ()  => numberOfMarkers == 0 && <Text>Start point</Text> 
+                  //   || numberOfMarkers == 1 && <Text>End point</Text>
+                  // }
                   renderRightButton={
                     () => numberOfMarkers == 2 && this.renderResetButton()}
 
@@ -308,10 +322,22 @@ class Search extends Component {
   randomColor(){
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   }
+
+  moveToUserLocation = async () => {
+    let location = await Location.getCurrentPositionAsync({});
+    const coordinates = {
+      latitude: location.coords.latitude, 
+      longitude: location.coords.longitude,
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.05 * ratio,
+    };
+
+    if(this.mapView) {
+      this.mapView.animateToRegion(coordinates, 1000);
+    }
+  }
+
 }
-
-
-
 
 
 const Loading = () => (

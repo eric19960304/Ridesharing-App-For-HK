@@ -40,7 +40,7 @@ class GoDrivePage extends Component {
     this.displayRegion = {
       ...initialCoordinates,
       latitudeDelta: 0.05,
-    longitudeDelta: 0.05 * ratio,
+      longitudeDelta: 0.05 * ratio,
     }
 
   }
