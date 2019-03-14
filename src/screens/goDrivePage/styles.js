@@ -32,5 +32,30 @@ export default {
     flexDirection: 'row',
     marginVertical: 20,
     backgroundColor: 'transparent',
+  },
+  centerEverything: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center', 
+    justifyContent: 'center'
+  },
+  centerContainer: {
+    flex:1, 
+    flexDirection: 'column',
+    alignItems: 'center', 
+    justifyContent: 'center'
+  },
+  centerText: {
+    width: '80%',
+    alignItems: 'center', 
+    justifyContent: 'center',
+    textAlign: 'center'
+  },
+  centerButton: {
+    marginTop: 30, 
+    width: '50%',
+    alignItems: 'center', 
+    justifyContent: 'center',
+    alignSelf:'center'
   }
 };

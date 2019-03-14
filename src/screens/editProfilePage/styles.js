@@ -20,6 +20,8 @@ export default {
     width: 200, height: 200
   },
   switch:{
+    paddingTop: 5,
+    paddingBottom: 5,
     marginTop:17,
     marginLeft:17,
     //justifyContent: 'center',

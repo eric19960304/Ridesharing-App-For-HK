@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import { Location } from "expo";
 import {
-  View,
-  Dimensions,
-  Platform
+  View, Dimensions,
 } from 'react-native';
 import {
   Container, Header, Title, Content, Button,
-  Icon, Left, Right, Body, Spinner, Toast
+  Icon, Left, Right, Body, Spinner, Toast, Text,
 } from "native-base";
 
+import StorageManager from "../../helpers/storageManager";
 import MapView, { Marker } from 'react-native-maps';
 import styles from './styles';
 import networkClient from "../../helpers/networkClient";
 import config from "../../../config";
+
+const storageManager = StorageManager.getInstance();
 
 const { width, height } = Dimensions.get('window');
 const ratio = width / height;
@@ -43,9 +44,13 @@ class GoDrivePage extends Component {
       longitudeDelta: 0.05 * ratio,
     }
 
+    this.user = storageManager.get('user');
   }
 
   componentWillMount() {
+    this.user = storageManager.get('user');
+    if(!this.user.isDriver) return;
+
     Location.getProviderStatusAsync()
     .then((result)=>{
       console.log(result);
@@ -66,8 +71,48 @@ class GoDrivePage extends Component {
   }
 
   render() {
-
     const { width, height } = Dimensions.get('window');
+    this.user = storageManager.get('user');
+
+    if(!this.user.isDriver){
+      return(
+        <Container>
+          <Header>
+            <Left>
+              <Button
+                transparent
+                onPress={() => this.props.navigation.openDrawer()}
+              >
+                <Icon type="MaterialIcons" name="menu" />
+              </Button>
+            </Left>
+            <Body>
+              <Title>Go Drive</Title>
+            </Body>
+            <Right />
+          </Header>
+
+          <Content 
+            scrollEnabled={false} 
+            contentContainerStyle={styles.centerContainer}
+          >
+            <View style={styles.centerEverything}>
+              <Text style={styles.centerText} >
+                Please first provide the details of your car!
+              </Text>
+
+              <Button block 
+                style={styles.centerButton}
+                onPress={() => this.props.navigation.navigate('EditProfilePage', { refresh: this.refreshFunction })}>
+                <Text>Go to profile page</Text>
+              </Button>
+              
+            </View>
+
+          </Content>
+        </Container>
+      )
+    }
 
     if(this.state.loading){
       return(
@@ -222,6 +267,10 @@ class GoDrivePage extends Component {
     .catch(()=>{
       console.log('err:', err);
     });
+  }
+
+  refreshFunction = () => {
+    this.forceUpdate();
   }
 
 } // end of class 

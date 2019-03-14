@@ -44,12 +44,17 @@ class EditProfilePage extends Component {
  
   render() {
     const { avatarSource, email, nickname, password, newPassword, confirmPassword,isDriver,carplate,contact } = this.state;
-    const user = storageManager.get('user');
+    // const user = storageManager.get('user');
     return (
       <Container style={styles.container}>
         <Header>
           <Left>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
+            <Button transparent onPress={() => {
+                                  this.props.navigation.goBack();
+                                  if(this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.refresh){
+                                    this.props.navigation.state.params.refresh();
+                                  }
+                                }}>
               <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
@@ -104,18 +109,18 @@ class EditProfilePage extends Component {
                <Text style={{color: 'grey',fontSize: 17}}>I am also a driver</Text>
               <Switch  
               value = {isDriver}
-              onValueChange = {(value) =>this.setState({isDriver: value})}/>
+              onValueChange = {this.onIsDriverClick}/>
             </View>
             
            
             <MyView hide={!this.state.isDriver}>
-            <Item floatingLabel>
-              <Label style={styles.label}>Car Plate</Label>
-              <Input 
-                value={carplate} 
-                onChangeText={(carplate) => this.setState({carplate})}
-              />
-            </Item>
+              <Item floatingLabel>
+                <Label style={styles.label}>Car Plate</Label>
+                <Input 
+                  value={carplate} 
+                  onChangeText={(carplate) => this.setState({carplate})}
+                />
+              </Item>
             </MyView>
             
             <Item floatingLabel>
@@ -125,8 +130,6 @@ class EditProfilePage extends Component {
                 onChangeText={(contact) => this.setState({contact})}
               />
             </Item>
-            
-            
 
             <Item floatingLabel>
               <Label style={styles.label}>Current Password</Label>
@@ -180,14 +183,32 @@ class EditProfilePage extends Component {
     //console.log(avatarSource);
   };
 
+  onIsDriverClick = (isDriver) => {
+    if(isDriver){
+      this.setState({
+        isDriver
+      })
+    }else{
+      this.setState({
+        isDriver,
+        carplate: ''
+      })
+    }
+    
+  }
+
   async onFormSubmit(){
-    const { avatarSource, email, nickname, password, newPassword, confirmPassword } = this.state;
+    const { avatarSource, email, nickname, password, newPassword, confirmPassword, isDriver, carplate } = this.state;
     let errorMessage = null;
     if(email.length === 0){
       errorMessage = "Please enter your email.";
     }
     if(nickname.length === 0){
       errorMessage = "Please enter your nickname.";
+    }
+
+    if(isDriver && !carplate){
+      errorMessage = "Please enter your carplate.";
     }
 
     let body = {};
@@ -214,8 +235,8 @@ class EditProfilePage extends Component {
       delete body['newPassword'];
       delete body['confirmPassword'];
       
-      //console.log(body);
-      storageManager.update('user',body);
+      console.log(body);
+      storageManager.update('user', body);
       
       /*
       post body format: {
