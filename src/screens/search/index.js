@@ -267,7 +267,7 @@ class Search extends Component {
     let body = {
       startLocation: markers[0].coordinate,
       endLocation: markers[1].coordinate,
-      timestamp: new Date()
+      timestamp: (new Date()).getTime(),
     };
 
     const response = await networkClient.POSTWithJWT(
@@ -275,6 +275,7 @@ class Search extends Component {
       body
     );
     console.log(response);
+
     Toast.show({
       text: 'Request sent, matching ...',
       textStyle: { textAlign: 'center' },
