@@ -17,7 +17,12 @@ import networkClient from "../../helpers/networkClient";
 import config from "../../../config";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-import carMarkerImage from "../../../assets/logo.png";
+import carMarkerImage1 from "../../../assets/car-top-view-1.png";
+import carMarkerImage2 from "../../../assets/car-top-view-2.png";
+import carMarkerImage3 from "../../../assets/car-top-view-3.png";
+import carMarkerImage4 from "../../../assets/car-top-view-4.png";
+
+const carMarkerImages = [carMarkerImage1, carMarkerImage2, carMarkerImage3, carMarkerImage4];
 
 const { width, height } = Dimensions.get('window');
 
@@ -94,25 +99,20 @@ class Search extends Component {
     }
 
     const url = config.serverURL + '/api/driver/get-all-drivers-location';
-    const body = {};
-    networkClient.POSTWithJWT(url, body)
+    networkClient.POSTWithJWT(url, {})
     .then((locationList)=>{
-      this.setState({ drivers: [] });
-      driverId = 0
-      //console.log('location list: ', locationList);
-      for (i in locationList){
-        this.setState({
-          drivers: [
-            ...this.state.drivers,
-            {
-              coordinate: {latitude: locationList[i].location.latitude, longitude: locationList[i].location.longitude},
-              key: 'driver' + driverId++,
-            }
-          ]
-        });
-      }
+      if(locationList.length <= this.state.drivers.length) return;
+
+      const newDrivers = locationList.map( (driverLocation, idx) =>{
+        return {
+          key: 'driver' + idx,
+          coordinate: driverLocation.location
+        };
+      });
+
+      this.setState({ drivers: newDrivers });
     })
-    .catch(()=>{
+    .catch((err)=>{
       console.log('err:', err);
     });
   }
@@ -192,14 +192,20 @@ class Search extends Component {
               ))}
 
 
-              {this.state.drivers.map(driver => (
-                <Marker
-                  image={carMarkerImage}
-                  key={driver.key}
-                  coordinate={driver.coordinate}
-                  style={{width: 10, height: 10}}
-                />
-              ))}
+              {this.state.drivers.map( (driver, idx) => {
+                  return (
+                  <Marker
+                    key={driver.key}
+                    coordinate={driver.coordinate}
+                  >
+                    <Image
+                      source={carMarkerImages[idx%carMarkerImages.length]}
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </Marker>
+                  );
+                }
+              )}
 
               {numberOfMarkers == 2 &&
                 <MapViewDirections

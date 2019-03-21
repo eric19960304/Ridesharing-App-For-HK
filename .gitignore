@@ -80,3 +80,5 @@ yarn-error.log*
 .DS_Store
 
 .watchmanconfig
+dump.rdb
+debug.log
