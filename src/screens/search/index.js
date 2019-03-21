@@ -34,7 +34,6 @@ const coordinates = {
   longitudeDelta: 0.5 * ratio,
 };
 let markerId = 0;
-let driverId = 0;
 class Search extends Component {
 
   constructor(props) {
@@ -85,10 +84,6 @@ class Search extends Component {
     this._updateDriverLocationWorker = setInterval(this.getDriverLocation, 5000);
   }
 
-  componentDidMount(){
-    this.getDriverLocation();
-  }
-
   componentWillUnmount() {
     clearInterval(this._updateDriverLocationWorker);
   }
@@ -101,7 +96,7 @@ class Search extends Component {
     const url = config.serverURL + '/api/driver/get-all-drivers-location';
     networkClient.POSTWithJWT(url, {})
     .then((locationList)=>{
-      if(locationList.length <= this.state.drivers.length) return;
+      if(locationList===undefined) return;
 
       const newDrivers = locationList.map( (driverLocation, idx) =>{
         return {
@@ -197,6 +192,7 @@ class Search extends Component {
                   <Marker
                     key={driver.key}
                     coordinate={driver.coordinate}
+                    style={{ width: 50, height: 50 }}
                   >
                     <Image
                       source={carMarkerImages[idx%carMarkerImages.length]}
