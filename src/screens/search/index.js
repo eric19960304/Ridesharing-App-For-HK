@@ -88,28 +88,24 @@ class Search extends Component {
     clearInterval(this._updateDriverLocationWorker);
   }
 
-  getDriverLocation = () => {
+  getDriverLocation = async () => {
     if(!this.props.navigation.isFocused()){
       return;
     }
 
     const url = config.serverURL + '/api/driver/get-all-drivers-location';
-    networkClient.POSTWithJWT(url, {})
-    .then((locationList)=>{
-      if(locationList===undefined) return;
+    const body = {};
+    let locationList = await networkClient.POSTWithJWT(url, body);
+    if(locationList===undefined) return;
 
-      const newDrivers = locationList.map( (driverLocation, idx) =>{
-        return {
-          key: 'driver' + idx,
-          coordinate: driverLocation.location
-        };
-      });
-
-      this.setState({ drivers: newDrivers });
-    })
-    .catch((err)=>{
-      console.log('err:', err);
+    const newDrivers = locationList.map( (driverLocation, idx) =>{
+      return {
+        key: 'driver' + idx,
+        coordinate: driverLocation.location
+      };
     });
+
+    this.setState({ drivers: newDrivers });
   }
 
   render() {

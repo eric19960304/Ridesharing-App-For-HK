@@ -225,28 +225,8 @@ class GoDrivePage extends Component {
     Location.getCurrentPositionAsync({})
     .then( (data)=>{
       if(data){
-
-        // /* send location to server only if the location is different in certain degree */
-        // if(!this.driverLocation){
-        //   this.driverLocation = data;
-        //   this.sendLocationToServer(data);
-        // }
-
-        // let prevLocation = Object.assign({}, this.driverLocation);
-        // const prevLat = parseFloat(prevLocation.coords.latitude);
-        // const prevLong = parseFloat(prevLocation.coords.longitude);
-        // const currentLat = parseFloat(data.coords.latitude);
-        // const currentLong = parseFloat(data.coords.longitude);
-        // let latDiff = Math.abs(currentLat - prevLat);
-        // let longDiff = Math.abs(currentLong - prevLong);
-        // if(latDiff+longDiff > 0.001){
-        //   this.driverLocation = data;
-        //   this.sendLocationToServer(data);
-        // }
-
         // send location to server anyway to update the timestamp
         this.sendLocationToServer(data);
-
       }
     })
     .catch((err)=>{
@@ -254,19 +234,14 @@ class GoDrivePage extends Component {
     });
   };
 
-  sendLocationToServer = (data) => {
+  sendLocationToServer = async (data) => {
     const url = config.serverURL + '/api/driver/location-update';
     const body ={
       location: data.coords,
-      timestamp: data.timestamp,
+      timestamp: new Date(),
     };
-    networkClient.POSTWithJWT(url, body)
-    .then((result)=>{
-      console.log(result);
-    })
-    .catch(()=>{
-      console.log('err:', err);
-    });
+    let response = await networkClient.POSTWithJWT(url, body);
+    console.log(response);
   }
 
   refreshFunction = () => {
