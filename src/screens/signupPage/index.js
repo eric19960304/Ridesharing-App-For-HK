@@ -20,13 +20,14 @@ class SignupPage extends Component {
       password: '',
       confirmPassword: '',
       nickname: '',
+      contact: '',
     };
 
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
   render() {
-    const { email, password, confirmPassword,nickname } = this.state;
+    const { email, password, confirmPassword, nickname, contact } = this.state;
 
     return (
       <Container style={styles.container}>
@@ -55,6 +56,12 @@ class SignupPage extends Component {
               <Input 
                 value={nickname} 
                 onChangeText={(nickname) => this.setState({nickname})}/>
+            </Item>
+            <Item floatingLabel>
+              <Label style={styles.label}>Contact Number</Label>
+              <Input 
+                value={contact} 
+                onChangeText={(contact) => this.setState({contact})}/>
             </Item>
             <Item floatingLabel>
               <Label style={styles.label}>Password</Label>
@@ -87,7 +94,7 @@ class SignupPage extends Component {
   };
 
   async onFormSubmit(){
-    const { email, nickname, password, confirmPassword  } = this.state;
+    const { email, nickname, contact, password, confirmPassword  } = this.state;
     
     // check if form input valid
     let errorMessage = null;
@@ -96,6 +103,9 @@ class SignupPage extends Component {
     }
     if(nickname.length === 0){
       errorMessage = "Please enter your nickname.";
+    }
+    if(contact.length === 0){
+      errorMessage = "Please enter your contact number.";
     }
     if(password.length === 0){
       errorMessage = "Please enter your password.";
@@ -122,6 +132,7 @@ class SignupPage extends Component {
         email: email.toLowerCase(),
         nickname,
         password,
+        contact
     };
     const response = await networkClient.POST(url, body);
     // check return value from backend

@@ -206,16 +206,17 @@ class Search extends Component {
                   apikey={GOOGLE_MAP_API_KEY}
                   strokeWidth={3}
                   strokeColor="#1E90FF"
-                  onReady={(result) => {
-                    this.mapView.fitToCoordinates(result.coordinates, {
-                      edgePadding: {
-                        right: (width / 20),
-                        bottom: (height / 20),
-                        left: (width / 20),
-                        top: (height / 20),
-                      }
-                    });
-                  }}
+                  // // I think not zoom to the user selected pickup and drop off point is better for UX
+                  // onReady={(result) => {
+                  //   this.mapView.fitToCoordinates(result.coordinates, {
+                  //     edgePadding: {
+                  //       right: (width / 20),
+                  //       bottom: (height / 20),
+                  //       left: (width / 20),
+                  //       top: (height / 20),
+                  //     }
+                  //   });
+                  // }}
                 />
               }
               

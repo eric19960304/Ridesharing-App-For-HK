@@ -82,3 +82,5 @@ yarn-error.log*
 .watchmanconfig
 dump.rdb
 debug.log
+
+.vscode/

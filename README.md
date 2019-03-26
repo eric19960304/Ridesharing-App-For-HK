@@ -11,10 +11,13 @@ Prerequisite:
 
 3. Install yarn with version >=1.12.3 installed
 
+4. modify the content of `serverURL` in `config.js` file, to the local/public IP address of the machine this server to be running on
+
 
 Install packages (under project's root directory):
 
 `yarn`
+
 
 Run the project:
 

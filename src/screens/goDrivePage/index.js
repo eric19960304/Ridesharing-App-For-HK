@@ -33,6 +33,7 @@ class GoDrivePage extends Component {
 
     this.state = {
       loading: false,
+      onGoingRideDetails: null
     };
 
     this.mapView = null;
@@ -49,7 +50,10 @@ class GoDrivePage extends Component {
 
   componentWillMount() {
     this.user = storageManager.get('user');
-    if(!this.user.isDriver) return;
+    if(!this.user.isDriver){
+      this._updateLocationWorker = null;
+      return;
+    };
 
     Location.getProviderStatusAsync()
     .then((result)=>{
@@ -103,7 +107,7 @@ class GoDrivePage extends Component {
 
               <Button block 
                 style={styles.centerButton}
-                onPress={() => this.props.navigation.navigate('EditProfilePage', { refresh: this.refreshFunction })}>
+                onPress={() => this.props.navigation.navigate('EditProfilePage')}>
                 <Text>Go to profile page</Text>
               </Button>
               
@@ -235,17 +239,20 @@ class GoDrivePage extends Component {
   };
 
   sendLocationToServer = async (data) => {
-    const url = config.serverURL + '/api/driver/location-update';
+    const { onGoingRideDetails } = this.state;
+    const url = config.serverURL + '/api/driver/update';
     const body ={
       location: data.coords,
       timestamp: new Date(),
     };
     let response = await networkClient.POSTWithJWT(url, body);
     console.log(response);
-  }
-
-  refreshFunction = () => {
-    this.forceUpdate();
+    if( response && (!onGoingRideDetails || onGoingRideDetails.length !== response.length) ){
+      // has new matched ride request
+      this.setState({
+        onGoingRideDetails: response
+      });
+    }
   }
 
 } // end of class 

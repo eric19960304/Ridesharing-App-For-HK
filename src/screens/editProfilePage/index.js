@@ -15,6 +15,7 @@ import config from "../../../config";
 import networkClient from "../../helpers/networkClient";
 import StorageManager from '../../helpers/storageManager';
 import MyView from './MyView';
+import navigation from '../../helpers/navigation';
 
 const storageManager = StorageManager.getInstance();
 
@@ -51,9 +52,6 @@ class EditProfilePage extends Component {
           <Left>
             <Button transparent onPress={() => {
                                   this.props.navigation.goBack();
-                                  if(this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.refresh){
-                                    this.props.navigation.state.params.refresh();
-                                  }
                                 }}>
               <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
@@ -312,6 +310,8 @@ class EditProfilePage extends Component {
       });
 
       Keyboard.dismiss();
+
+      this.props.navigation.dispatch(navigation.resetToDrawer);
 
     }else if(response.message){
       // profile update fail
