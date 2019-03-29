@@ -3,12 +3,14 @@ import {
   View,
   Dimensions,
   Image,
+  Alert,
 } from 'react-native';
 import {
   Container, Header, Title, Content, Text, Button,
   Icon, Left, Right, Body, Spinner, Toast
 } from "native-base";
 import { Location, } from 'expo';
+
 
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
@@ -45,6 +47,7 @@ class Search extends Component {
       drivers: [],
       mapRegion: null,
       GOOGLE_MAP_API_KEY: null,
+      alerted:false,
     };
 
     this.displayRegion = {
@@ -114,6 +117,7 @@ class Search extends Component {
     const { GOOGLE_MAP_API_KEY, isMoveWithUser } = this.state;
 
     const numberOfMarkers = this.state.markers.length;
+    const alerted=this.state.alerted;
     
 
     if(this.state.loading){
@@ -256,7 +260,7 @@ class Search extends Component {
                   //   || numberOfMarkers == 1 && <Text>End point</Text>
                   // }
                   renderRightButton={
-                    () => numberOfMarkers == 2 && this.renderResetButton()}
+                    () => numberOfMarkers == 2 && alerted == false &&  this.alert()}
 
                   ref={(instance) => { this.GooglePlacesRef = instance }}
                 />
@@ -280,7 +284,7 @@ class Search extends Component {
       </Container>
     );
   }
-
+  
   renderResetButton(){
     return (
       <Button onPress={
@@ -290,29 +294,52 @@ class Search extends Component {
       </Button>
     )
   }
-
+  
+  alert()
+  {
+    const { markers,alerted } = this.state;
+    this.setState({
+      alerted :true,
+    })
+    
+    let response =fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+markers[0].coordinate.latitude+','+markers[0].coordinate.longitude+'&destinations='+markers[1].coordinate.latitude+','+markers[1].coordinate.longitude+'&key=AIzaSyCMF65pXtPakOIuMSSkuTxeJ5AYQ-17bt8', {
+      method: 'GET'
+   })
+   .then((response) => response.json())
+   .then((responseJson) => {
+      var price=responseJson.rows[0].elements[0].distance.value/1000;
+      Alert.alert(
+        'Below is the details of your trip:',
+        'The recommended price is : '+responseJson.rows[0].elements[0].distance.value/100,
+        //'The approximate time in minutes is : '+responseJson.rows[0].elements[0].duration.value/60,
+        [
+          {text: 'Reset', onPress: () => this.resetMarker()},
+          {text: 'Submit request', onPress: () => this.submitRideRequest()},
+        ],
+        {cancelable: false},
+      );
+     
+   })
+   .catch((error) => {
+      console.error(error);
+   });
+   
+  }
   async submitRideRequest(){
     const { markers } = this.state;
-    console.log('markers:', markers);
-
+    var distance=0;
+    this.resetMarker();          
     let body = {
       startLocation: markers[0].coordinate,
       endLocation: markers[1].coordinate,
       timestamp: (new Date()).getTime(),
     };
 
-    const response = await networkClient.POSTWithJWT(
+    const response1 = await networkClient.POSTWithJWT(
       config.serverURL + '/api/rider/real-time-ride-request',
       body
     );
-    console.log(response);
-
-    Toast.show({
-      text: 'Request sent, matching ...',
-      textStyle: { textAlign: 'center' },
-      type: "success",
-      position: "top",
-    });
+     console.log(response1);
   }
 
   changeMapRegion(data, details){
@@ -347,7 +374,7 @@ class Search extends Component {
   }
   
   resetMarker(){
-    this.setState({ markers: [] });
+    this.setState({ markers: [] ,alerted:false});
     markerId = 0;
   }
 
