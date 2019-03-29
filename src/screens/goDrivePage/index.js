@@ -243,7 +243,7 @@ class GoDrivePage extends Component {
     const url = config.serverURL + '/api/driver/update';
     const body ={
       location: data.coords,
-      timestamp: new Date(),
+      timestamp: (new Date()).getTime(),
     };
     let response = await networkClient.POSTWithJWT(url, body);
     console.log(response);

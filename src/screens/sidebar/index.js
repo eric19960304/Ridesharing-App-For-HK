@@ -6,7 +6,10 @@ import {
   Content, Text, List, ListItem, Icon,
   Container, Left, Right, Badge
 } from "native-base";
+
 import styles from "./style";
+import networkClient from "../../helpers/networkClient";
+import config from "../../../config";
 
 const storageManager = StorageManager.getInstance();
 const datas = [
@@ -25,6 +28,7 @@ const datas = [
     name: "Message",
     route: "MessagePage",
     icon: "comments",
+    unreadMessagesCount: 0,
   },
   {
     name: "Setting",
@@ -38,13 +42,24 @@ class SideBar extends Component {
     super(props);
     this.state = {
       shadowOffsetWidth: 1,
-      shadowRadius: 4
+      shadowRadius: 4,
+      datas: datas
     };
+  }
+
+  componentWillMount(){
+    this._updateMessageCountWorker = setInterval(this.updateUnreadMessagesCount, 5000);
+  }
+
+  componentWillUnmount(){
+    clearInterval(this._updateMessageCountWorker);
   }
 
   render() {
     const user = storageManager.get('user');
     const avatarSource = user.avatarSource;
+    const { datas } = this.state;
+
     return (
       <Container>
         <Content
@@ -72,9 +87,6 @@ class SideBar extends Component {
               }
             </View>
 
-
-
-
             <View style={styles.avatarGroup}>
               <Text style={styles.username}>
                 {user.nickname}
@@ -83,45 +95,57 @@ class SideBar extends Component {
       
           </View>
                         
-          {this.renderList()}
+          <List
+            dataArray={datas}
+            renderRow={data =>
+              <ListItem button noBorder
+                onPress={() => this.props.navigation.navigate(data.route)}
+              >
+                <Left>
+                  <Icon active
+                    type="FontAwesome"
+                    name={data.icon}
+                    style={styles.itemIcon}
+                  />
+                  <Text style={styles.text}>
+                    {data.name}
+                  </Text>
+                  { data.name ==='Message' &&
+                    <Badge danger style={{marginLeft: 10}}>
+                      <Text> { String(data.unreadMessagesCount) } </Text>
+                    </Badge>
+                  }
+                </Left>
+                
+              </ListItem>
+            }
+          />
 
         </Content>
       </Container>
     );
   } // end of render
 
-  renderList(){
-    return (
-      <List
-        dataArray={datas}
-        renderRow={data =>
-          <ListItem button noBorder
-            onPress={() => this.props.navigation.navigate(data.route)}
-          >
-            <Left>
-              <Icon active
-                type="FontAwesome"
-                name={data.icon}
-                style={styles.itemIcon}
-              />
-              <Text style={styles.text}>
-                {data.name}
-              </Text>
-            </Left>
-            { data.types &&
-              <Right>
-                <Badge style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {`${data.types} Types`}
-                  </Text>
-                </Badge>
-              </Right>
-            }
-          </ListItem>
-        }
-      />
-    )
-  } // end of renderList
+  updateUnreadMessagesCount = async () => {
+    const response = await networkClient.POSTWithJWT(config.serverURL + '/api/user/unread-messages-count', {});
+    if('count' in response){
+      const count = Number(response.count);
+      const { datas } = this.state;
+      if(count != datas[2].unreadMessagesCount){
+        let newDatas = [];
+        datas.forEach( m => {
+          newDatas.push(Object.assign({}, m));
+        });
+        newDatas[2].unreadMessagesCount = count;
+        this.setState({
+          datas: newDatas,
+        });
+      }
+    }
+    
+  }
+
 }
+
 
 export default SideBar;
