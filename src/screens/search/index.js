@@ -18,6 +18,7 @@ import styles from './styles';
 import networkClient from "../../helpers/networkClient";
 import config from "../../../config";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import {getDistance} from "../../helpers/googleApiClient"
 
 import carMarkerImage1 from "../../../assets/car-top-view-1.png";
 import carMarkerImage2 from "../../../assets/car-top-view-2.png";
@@ -57,12 +58,6 @@ class Search extends Component {
     }
 
     this.mapView = null;
-
-    // this.resetMarker = this.resetMarker.bind(this);
-    //this.setMarker = this.setMarker.bind(this);
-    //this.setEndPointMarker = this.setEndPointMarker.bind(this);
-    this.renderResetButton = this.renderResetButton.bind(this);
-    this.submitRideRequest = this.submitRideRequest.bind(this);
   }
 
   componentWillMount() {
@@ -240,7 +235,7 @@ class Search extends Component {
                   
                   query={{
                     // available options: https://developers.google.com/places/web-service/autocomplete
-                    key: 'AIzaSyCMF65pXtPakOIuMSSkuTxeJ5AYQ-17bt8',
+                    key: GOOGLE_MAP_API_KEY,
                     language: 'en', // language of the results
                     // secondary_text: 'Hong Kong'
                     // types: 'HK' // default: 'geocode'
@@ -265,18 +260,6 @@ class Search extends Component {
                   ref={(instance) => { this.GooglePlacesRef = instance }}
                 />
 
-              { numberOfMarkers == 2 &&
-                <View style={styles.buttonContainer}>
-                  <View style={styles.bubble}>
-                  
-                    <Button title="Submit" onPress={this.submitRideRequest}>
-                      <Text>Submit</Text>
-                    </Button>
-                  
-                  </View>
-                </View>
-              }
-
           </View>
           
           
@@ -285,7 +268,7 @@ class Search extends Component {
     );
   }
   
-  renderResetButton(){
+  renderResetButton = () => {
     return (
       <Button onPress={
         () => this.resetMarker()
@@ -295,29 +278,23 @@ class Search extends Component {
     )
   }
   
-  alert()
-  {
-    const { markers,alerted } = this.state;
-    this.setState({
-      alerted :true,
-    })
+  alert = () => {
+    const { markers, GOOGLE_MAP_API_KEY } = this.state;
     
-    let response =fetch('https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+markers[0].coordinate.latitude+','+markers[0].coordinate.longitude+'&destinations='+markers[1].coordinate.latitude+','+markers[1].coordinate.longitude+'&key=AIzaSyCMF65pXtPakOIuMSSkuTxeJ5AYQ-17bt8', {
-      method: 'GET'
-   })
-   .then((response) => response.json())
-   .then((responseJson) => {
-      var price=responseJson.rows[0].elements[0].distance.value/1000;
+    getDistance(markers[0].coordinate, markers[1].coordinate, GOOGLE_MAP_API_KEY)
+   .then((distance_duration) => {
       Alert.alert(
-        'Below is the details of your trip:',
-        'The recommended price is : '+responseJson.rows[0].elements[0].distance.value/100,
-        //'The approximate time in minutes is : '+responseJson.rows[0].elements[0].duration.value/60,
-        [
-          {text: 'Reset', onPress: () => this.resetMarker()},
-          {text: 'Submit request', onPress: () => this.submitRideRequest()},
-        ],
+        'Ride details',
+        'Travel distance: ' + distance_duration[0] + ' m\n' +
+        'Estimate time: '+ Math.round(distance_duration[1]/60) +' mins',
+        [ {text: 'Reset', onPress: this.resetMarker},
+          {text: 'Submit request', onPress: this.submitRideRequest} ],
         {cancelable: false},
       );
+
+      this.setState({
+        alerted :true,
+      })
      
    })
    .catch((error) => {
@@ -325,9 +302,8 @@ class Search extends Component {
    });
    
   }
-  async submitRideRequest(){
+  submitRideRequest = async () => {
     const { markers } = this.state;
-    var distance=0;
     this.resetMarker();          
     let body = {
       startLocation: markers[0].coordinate,
@@ -339,10 +315,9 @@ class Search extends Component {
       config.serverURL + '/api/rider/real-time-ride-request',
       body
     );
-     console.log(response1);
   }
 
-  changeMapRegion(data, details){
+  changeMapRegion = (data, details) => {
     //console.log(data, details);
     if(this.state.markers.length <= 1){
       this.setState({
@@ -358,7 +333,7 @@ class Search extends Component {
     }
   }
   
-  onMapPress(e) {
+  onMapPress = (e) => {
     if(this.state.markers.length <= 1){
       this.setState({
         markers: [
@@ -373,12 +348,15 @@ class Search extends Component {
     }
   }
   
-  resetMarker(){
-    this.setState({ markers: [] ,alerted:false});
+  resetMarker = () => {
+    this.setState({ 
+      markers: [], 
+      alerted: false
+    });
     markerId = 0;
   }
 
-  randomColor(){
+  randomColor = () => {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   }
 
