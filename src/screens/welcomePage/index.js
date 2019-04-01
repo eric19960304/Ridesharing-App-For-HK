@@ -4,9 +4,9 @@ import { Container, Button, H2, Text } from "native-base";
 
 import styles from "./styles";
 
-const launchscreenBg = require("../../../assets/launchscreen-bg.jpg");
+const backgroundImage = require("../../../assets/backgroundImage.jpg");
 const launchscreenLogo = require("../../../assets/logo-threeriders.png");
-
+const slogan = require("../../../assets/slogan.png");
 class WelcomePage extends Component {
   
   constructor(props){
@@ -20,33 +20,32 @@ class WelcomePage extends Component {
       <Container>
         <StatusBar barStyle="light-content" />
       
-        <ImageBackground source={launchscreenBg} style={styles.imageContainer}>
+        <ImageBackground source={backgroundImage} style={styles.imageContainer}>
           <View style={styles.logoContainer}>
             <ImageBackground source={launchscreenLogo} style={styles.logo} />
+            
           </View>
 
           <View style={styles.contentContainer}>
 
-          <View  style={styles.titleContainer}>
-            <H2 style={styles.text}>An Easy-to-use</H2>
-            <H2 style={styles.text}>Ridesharing App for Hong Kong</H2>
-          </View>
-
-           
-          <View style={styles.buttonGroup} >
-            <Button
-              style={styles.leftButton}
-              onPress={() => this.props.navigation.navigate('LoginPage')}
-            >
-              <Text>Login</Text>
-            </Button>
-            <Button
-              style={styles.rightButton}
-              onPress={() => this.props.navigation.navigate('SignupPage')}
-            >
-              <Text>Signup</Text>
-            </Button>
-          </View>
+            <View style={styles.titleContainer}>
+              <ImageBackground source={slogan} style={styles.slogan} />
+            </View>
+            
+            <View style={styles.buttonGroup} >
+              <Button
+                style={styles.leftButton}
+                onPress={() => this.props.navigation.navigate('LoginPage')}
+              >
+                <Text>Login</Text>
+              </Button>
+              <Button
+                style={styles.rightButton}
+                onPress={() => this.props.navigation.navigate('SignupPage')}
+              >
+                <Text>Signup</Text>
+              </Button>
+            </View>
 
           </View>
         </ImageBackground>

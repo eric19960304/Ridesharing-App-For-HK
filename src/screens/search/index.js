@@ -48,7 +48,6 @@ class Search extends Component {
       drivers: [],
       mapRegion: null,
       GOOGLE_MAP_API_KEY: null,
-      alerted:false,
     };
 
     this.displayRegion = {
@@ -61,23 +60,20 @@ class Search extends Component {
   }
 
   componentWillMount() {
-    networkClient.POSTWithJWT(config.serverURL + '/api/secret/google-map-api-key', {})
-    .then( (data)=>{
-      if(!data) return;
+    networkClient.POSTWithJWT(
+      config.serverURL + '/api/secret/google-map-api-key', 
+      {},
+      (data)=>{
+        if(!data) return;
 
-      if(data.googleMapApiKey){
-        this.setState({
-          GOOGLE_MAP_API_KEY: data.googleMapApiKey,
-          loading: false
-        });
-      }else if(data.message){
-        console.log(data.message);
+        if(data.googleMapApiKey){
+          this.setState({
+            GOOGLE_MAP_API_KEY: data.googleMapApiKey,
+            loading: false
+          });
+        }
       }
-      
-    })
-    .catch( (error)=>{
-      console.log(error);
-    });
+    );
 
     this._updateDriverLocationWorker = setInterval(this.getDriverLocation, 5000);
   }
@@ -93,17 +89,19 @@ class Search extends Component {
 
     const url = config.serverURL + '/api/driver/get-all-drivers-location';
     const body = {};
-    let locationList = await networkClient.POSTWithJWT(url, body);
-    if(locationList===undefined) return;
+    networkClient.POSTWithJWT(url, body, (locationList)=>{
+      if(locationList===undefined) return;
 
-    const newDrivers = locationList.map( (driverLocation, idx) =>{
-      return {
-        key: 'driver' + idx,
-        coordinate: driverLocation.location
-      };
+      const newDrivers = locationList.map( (driverLocation, idx) =>{
+        return {
+          key: 'driver' + idx,
+          coordinate: driverLocation.location
+        };
+      });
+  
+      this.setState({ drivers: newDrivers });
     });
-
-    this.setState({ drivers: newDrivers });
+    
   }
 
   render() {
@@ -112,9 +110,7 @@ class Search extends Component {
     const { GOOGLE_MAP_API_KEY, isMoveWithUser } = this.state;
 
     const numberOfMarkers = this.state.markers.length;
-    const alerted=this.state.alerted;
     
-
     if(this.state.loading){
       return (
       <Container>
@@ -254,8 +250,6 @@ class Search extends Component {
                   //   ()  => numberOfMarkers == 0 && <Text>Start point</Text> 
                   //   || numberOfMarkers == 1 && <Text>End point</Text>
                   // }
-                  renderRightButton={
-                    () => numberOfMarkers == 2 && alerted == false &&  this.alert()}
 
                   ref={(instance) => { this.GooglePlacesRef = instance }}
                 />
@@ -268,57 +262,61 @@ class Search extends Component {
     );
   }
   
-  renderResetButton = () => {
-    return (
-      <Button onPress={
-        () => this.resetMarker()
-      }>
-        <Text>Reset</Text>
-      </Button>
-    )
-  }
-  
   alert = () => {
     const { markers, GOOGLE_MAP_API_KEY } = this.state;
-    
-    getDistance(markers[0].coordinate, markers[1].coordinate, GOOGLE_MAP_API_KEY)
-   .then((distance_duration) => {
-      Alert.alert(
-        'Ride details',
-        'Travel distance: ' + distance_duration[0] + ' m\n' +
-        'Estimate time: '+ Math.round(distance_duration[1]/60) +' mins',
-        [ {text: 'Reset', onPress: this.resetMarker},
-          {text: 'Submit request', onPress: this.submitRideRequest} ],
-        {cancelable: false},
-      );
 
-      this.setState({
-        alerted :true,
+    getDistance(markers[0].coordinate, markers[1].coordinate, GOOGLE_MAP_API_KEY)
+      .then((distance_duration) => {
+        Alert.alert(
+          'Ride details',
+          'Travel distance: ' + distance_duration[0] + ' m\n' +
+          'Estimate time: '+ Math.round(distance_duration[1]/60) +' mins',
+          [ 
+            {text: 'Submit', onPress: () => {
+                this.submitRideRequest(distance_duration);
+              } 
+            },
+            {text: 'Cancel', onPress: this.resetMarker}
+          ],
+          {cancelable: false},
+        );
+
       })
-     
-   })
-   .catch((error) => {
-      console.error(error);
-   });
+      .catch((error) => {
+        console.error(error);
+      });
    
   }
-  submitRideRequest = async () => {
+  submitRideRequest = (distance_duration) => {
     const { markers } = this.state;
-    this.resetMarker();          
+    this.resetMarker();
+    const estimatedOptimal = {
+      distance: distance_duration[0],
+      duration: distance_duration[1],
+    };
     let body = {
       startLocation: markers[0].coordinate,
       endLocation: markers[1].coordinate,
       timestamp: (new Date()).getTime(),
+      estimatedOptimal,
     };
 
-    const response1 = await networkClient.POSTWithJWT(
+    networkClient.POSTWithJWT(
       config.serverURL + '/api/rider/real-time-ride-request',
-      body
+      body,
+      (data)=>{
+        Toast.show({
+          text: 'Request sent, matching in progress ...',
+          textStyle: { textAlign: 'center' },
+          type: "success",
+          position: "top",
+          duration: 5000,
+        });
+      }
     );
   }
 
   changeMapRegion = (data, details) => {
-    //console.log(data, details);
     if(this.state.markers.length <= 1){
       this.setState({
         mapRegion: {
@@ -334,7 +332,9 @@ class Search extends Component {
   }
   
   onMapPress = (e) => {
-    if(this.state.markers.length <= 1){
+    const numberOfMarkers = this.state.markers.length;
+
+    if( numberOfMarkers <= 1){
       this.setState({
         markers: [
           ...this.state.markers,
@@ -345,19 +345,29 @@ class Search extends Component {
           },
         ],
       });
+
+      if(numberOfMarkers == 1){
+        setTimeout(()=>{
+          this.alert();
+        }, 1500);
+      }
     }
   }
   
   resetMarker = () => {
     this.setState({ 
       markers: [], 
-      alerted: false
     });
     markerId = 0;
   }
 
   randomColor = () => {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   }
 
   moveToUserLocation = async () => {

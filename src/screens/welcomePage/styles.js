@@ -17,6 +17,14 @@ export default {
     width: 241,
     height: 130
   },
+  sloganContainer: {
+    marginTop: deviceHeight / 10,
+    marginBottom: 20
+  },
+  slogan: {
+    width: 330,
+    height: 85
+  },
   titleContainer: {
     alignItems: "center",
     marginBottom: 50,

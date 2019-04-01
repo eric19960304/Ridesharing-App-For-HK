@@ -82,21 +82,20 @@ class ResetPasswordPage extends Component {
     const body ={
         email: email.toLowerCase()
     };
-    const response = await networkClient.POST(url, body);
+    networkClient.POST(url, body, (response)=>{
+      // check return value from backend
+      let successMessage = response.message;
 
-    // check return value from backend
-    let successMessage = response.message;
+      Toast.show({
+        text: successMessage,
+        textStyle: { textAlign: 'center' },
+        type: successMessage === 'Link sent' ? 'success' : 'danger' ,
+        position: "top",
+        duration: 5000
+      });
 
-    Toast.show({
-      text: successMessage,
-      textStyle: { textAlign: 'center' },
-      type: successMessage === 'Link sent' ? 'success' : 'danger' ,
-      position: "top",
-      duration: 5000
+      this.props.navigation.goBack();
     });
-
-    this.props.navigation.goBack();
-    
 
   } // end of onFormSubmit
 

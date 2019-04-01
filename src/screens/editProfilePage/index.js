@@ -36,7 +36,6 @@ class EditProfilePage extends Component {
       contact: user.contact,
     };
     
-    //console.log(user.avatarSource);
     this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
@@ -178,7 +177,6 @@ class EditProfilePage extends Component {
     if (!profilePicResult64.cancelled) {
       this.setState({ avatarSource: profilePicResult64 });
     }
-    //console.log(avatarSource);
   };
 
   onIsDriverClick = (isDriver) => {
@@ -233,7 +231,6 @@ class EditProfilePage extends Component {
       delete body['newPassword'];
       delete body['confirmPassword'];
       
-      console.log(body);
       storageManager.update('user', body);
       
       /*
@@ -244,9 +241,10 @@ class EditProfilePage extends Component {
       */
 
       // send request to backend
-      response = await networkClient.POSTWithJWT(
+      networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile', 
-        body
+        body,
+        ()=>{}
       );
       
     }else{
@@ -279,7 +277,6 @@ class EditProfilePage extends Component {
         if(this.state[k]) body[k] = this.state[k];
       }
       delete body['confirmPassword'];
-      //console.log(body);
       /*
       post body format: {
         email: string,
@@ -289,9 +286,10 @@ class EditProfilePage extends Component {
       }
       */
 
-      response = await networkClient.POSTWithJWT(
+      networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile-with-password', 
-        body
+        body,
+        ()=>{}
       );
     
     }

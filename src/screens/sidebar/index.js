@@ -28,7 +28,7 @@ const datas = [
     name: "Message",
     route: "MessagePage",
     icon: "comments",
-    unreadMessagesCount: 0,
+    unreadMessagesCount: null,
   },
   {
     name: "Setting",
@@ -48,6 +48,7 @@ class SideBar extends Component {
   }
 
   componentWillMount(){
+    this.updateUnreadMessagesCount();
     this._updateMessageCountWorker = setInterval(this.updateUnreadMessagesCount, 5000);
   }
 
@@ -110,7 +111,7 @@ class SideBar extends Component {
                   <Text style={styles.text}>
                     {data.name}
                   </Text>
-                  { data.name ==='Message' &&
+                  { data.name ==='Message' && data.unreadMessagesCount!==null &&
                     <Badge danger style={{marginLeft: 10}}>
                       <Text> { String(data.unreadMessagesCount) } </Text>
                     </Badge>
@@ -127,21 +128,26 @@ class SideBar extends Component {
   } // end of render
 
   updateUnreadMessagesCount = async () => {
-    const response = await networkClient.POSTWithJWT(config.serverURL + '/api/user/unread-messages-count', {});
-    if('count' in response){
-      const count = Number(response.count);
-      const { datas } = this.state;
-      if(count != datas[2].unreadMessagesCount){
-        let newDatas = [];
-        datas.forEach( m => {
-          newDatas.push(Object.assign({}, m));
-        });
-        newDatas[2].unreadMessagesCount = count;
-        this.setState({
-          datas: newDatas,
-        });
+    networkClient.POSTWithJWT(
+      config.serverURL + '/api/user/unread-messages-count', 
+      {},
+      (response)=>{
+        if(response && 'count' in response){
+          const count = Number(response.count);
+          const { datas } = this.state;
+          if(count != datas[2].unreadMessagesCount){
+            let newDatas = [];
+            datas.forEach( m => {
+              newDatas.push(Object.assign({}, m));
+            });
+            newDatas[2].unreadMessagesCount = count;
+            this.setState({
+              datas: newDatas,
+            });
+          }
+        }
       }
-    }
+    );
     
   }
 

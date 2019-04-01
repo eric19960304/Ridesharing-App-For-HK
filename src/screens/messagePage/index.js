@@ -34,7 +34,6 @@ class MessagePage extends React.Component {
     
     const { userId, messages } = this.state;
 
-    console.log(userId);
 
     return (
       <Container>
@@ -57,7 +56,6 @@ class MessagePage extends React.Component {
           messages.length > 0 ?
           <GiftedChat
             messages={messages}
-            // onSend={this.onSend}
             user={userId}
             renderInputToolbar={()=>null}
           />
@@ -85,15 +83,15 @@ class MessagePage extends React.Component {
   // }
 
   storeMessages = (messages) => {
-    if(!this.props.navigation.isFocused()){
-      Toast.show({
-        text: 'New message: ' + messages.text,
-        textStyle: { textAlign: 'center' },
-        type: "success",
-        position: "top",
-        duration: 3000
-      });
-    }
+    if(messages===null || messages===undefined) return;
+
+    // Toast.show({
+    //   text: 'New message: \n' + messages.text,
+    //   textStyle: { textAlign: 'center' },
+    //   type: "success",
+    //   position: "top",
+    //   duration: 3000
+    // });
 
     this.setState( (prevState) => ({
       messages: GiftedChat.append(prevState.messages, messages)

@@ -76,7 +76,7 @@ class LoginPage extends Component {
 
   };
 
-  async onFormSubmit(){
+  onFormSubmit = () => {
 
     const { email, password } = this.state;
 
@@ -104,45 +104,45 @@ class LoginPage extends Component {
         email: email.toLowerCase(),
         password,
     };
-    const response = await networkClient.POST(url, body);
+    networkClient.POST(url, body, (response)=>{
+      // check return value from backend
+      const successMessage = "Signup successful!";
+      const failMessage = 'something go wrong, please try again later!';
+      if(response.jwt && response.user){
+        // login successful
+        storageManager.set('user', response.user);
+        storageManager.set('jwt', response.jwt);
 
-    // check return value from backend
-    const successMessage = "Signup successful!";
-    const failMessage = 'something go wrong, please try again later!';
-    if(response.jwt && response.user){
-      // login successful
-      storageManager.set('user', response.user);
-      storageManager.set('jwt', response.jwt);
+        Toast.show({
+          text: successMessage,
+          textStyle: { textAlign: 'center' },
+          type: 'success',
+          position: "top",
+        });
 
-      Toast.show({
-        text: successMessage,
-        textStyle: { textAlign: 'center' },
-        type: 'success',
-        position: "top",
-      });
+        this.registerForPushNotification();
 
-      this.registerForPushNotification();
+        Keyboard.dismiss();
+        this.props.navigation.dispatch(navigation.resetToDrawer); // reset navigation to welcomepage
 
-      Keyboard.dismiss();
-      this.props.navigation.dispatch(navigation.resetToDrawer); // reset navigation to welcomepage
-
-    }else if(response.message){
-      // login fails
-      Toast.show({
-        text: response.message,
-        textStyle: { textAlign: 'center' },
-        type: "danger",
-        position: "top",
-      });
-    }else{
-      // server error
-      Toast.show({
-        text: failMessage,
-        textStyle: { textAlign: 'center' },
-        type: "danger",
-        position: "top",
-      });
-    }
+      }else if(response.message){
+        // login fails
+        Toast.show({
+          text: response.message,
+          textStyle: { textAlign: 'center' },
+          type: "danger",
+          position: "top",
+        });
+      }else{
+        // server error
+        Toast.show({
+          text: failMessage,
+          textStyle: { textAlign: 'center' },
+          type: "danger",
+          position: "top",
+        });
+      }
+    });
 
   } // end of onFormSubmit
 
@@ -156,7 +156,7 @@ class LoginPage extends Component {
         email: user.email
       }
     };
-    networkClient.POSTWithJWT(config.serverURL + '/api/user/push-token', body);
+    networkClient.POSTWithJWT(config.serverURL + '/api/user/push-token', body, ()=>{});
   }
 
 }

@@ -93,7 +93,7 @@ class SignupPage extends Component {
 
   };
 
-  async onFormSubmit(){
+  onFormSubmit = () => {
     const { email, nickname, contact, password, confirmPassword  } = this.state;
     
     // check if form input valid
@@ -134,42 +134,46 @@ class SignupPage extends Component {
         password,
         contact
     };
-    const response = await networkClient.POST(url, body);
-    // check return value from backend
-    const successMessage = "Signup successful, please check your email for activate link";
-    const failMessage = 'something go wrong, please try again later!';
-    if(response.success){
-      // signup successful
-
-      Toast.show({
-        text: successMessage,
-        textStyle: { textAlign: 'center' },
-        type: "success",
-        position: "top",
-        duration: 5000
-      });
-
-      Keyboard.dismiss();
+    
+    networkClient.POST(url, body, (response)=>{
       
-      this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
+      // check return value from backend
+      const successMessage = "Signup successful, please check your email for activate link";
+      const failMessage = 'something go wrong, please try again later!';
+      if(response.success){
+        // signup successful
 
-    }else if(response.message){
-      // signup fails
-      Toast.show({
-        text: response.message,
-        textStyle: { textAlign: 'center' },
-        type: "danger",
-        position: "top",
-      });
-    }else{
-      // server error
-      Toast.show({
-        text: failMessage,
-        textStyle: { textAlign: 'center' },
-        type: "danger",
-        position: "top",
-      });
-    }
+        Toast.show({
+          text: successMessage,
+          textStyle: { textAlign: 'center' },
+          type: "success",
+          position: "top",
+          duration: 5000
+        });
+
+        Keyboard.dismiss();
+        
+        this.props.navigation.dispatch(navigation.resetToWelcomePage); // reset navigation to welcomepage
+
+      }else if(response.message){
+        // signup fails
+        Toast.show({
+          text: response.message,
+          textStyle: { textAlign: 'center' },
+          type: "danger",
+          position: "top",
+        });
+      }else{
+        // server error
+        Toast.show({
+          text: failMessage,
+          textStyle: { textAlign: 'center' },
+          type: "danger",
+          position: "top",
+        });
+      }
+
+    });
 
   } // end of onFormSubmit
 

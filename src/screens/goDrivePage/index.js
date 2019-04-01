@@ -57,7 +57,6 @@ class GoDrivePage extends Component {
 
     Location.getProviderStatusAsync()
     .then((result)=>{
-      console.log(result);
       if(result.locationServicesEnabled){
         this.updateLocation();
         this._updateLocationWorker = setInterval(this.updateLocation, 5000);
@@ -65,9 +64,6 @@ class GoDrivePage extends Component {
         this._updateLocationWorker = setInterval(this.displayLocationNotEnabledWarning, 5000);
       }
     })
-    .catch((err)=>{
-      console.log(err);
-    });
   }
 
   componentWillUnmount() {
@@ -233,9 +229,6 @@ class GoDrivePage extends Component {
         this.sendLocationToServer(data);
       }
     })
-    .catch((err)=>{
-      console.log('err:', err);
-    });
   };
 
   sendLocationToServer = async (data) => {
@@ -245,14 +238,14 @@ class GoDrivePage extends Component {
       location: data.coords,
       timestamp: (new Date()).getTime(),
     };
-    let response = await networkClient.POSTWithJWT(url, body);
-    console.log(response);
-    if( response && (!onGoingRideDetails || onGoingRideDetails.length !== response.length) ){
-      // has new matched ride request
-      this.setState({
-        onGoingRideDetails: response
-      });
-    }
+    networkClient.POSTWithJWT(url, body, (response)=>{
+      if( response && (!onGoingRideDetails || onGoingRideDetails.length !== response.length) ){
+        // has new matched ride request
+        this.setState({
+          onGoingRideDetails: response
+        });
+      }
+    });
   }
 
 } // end of class 
