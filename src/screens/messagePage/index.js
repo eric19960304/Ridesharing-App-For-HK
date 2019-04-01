@@ -21,12 +21,23 @@ class MessagePage extends React.Component {
 
     this.state = {
       messages: [],
-      userId: { _id: userId } 
+      userId: { _id: userId }
     };
 
     this.socket = SocketIOClient(config.serverURL);
     this.socket.emit('userJoined', { 'userId': userId });
     this.socket.on('message', this.storeMessages);
+  }
+
+  componentWillMount(){
+    this.subs = [
+      this.props.navigation.addListener('didFocus', (payload) => this.componentDidFocus(payload)),
+    ];
+  }
+
+  componentDidFocus = (payload)=>{
+    const userId = storageManager.get('user').userId;
+    this.socket.emit('userClearUnread', { 'userId': userId });
   }
 
   render() {
@@ -58,6 +69,8 @@ class MessagePage extends React.Component {
             messages={messages}
             user={userId}
             renderInputToolbar={()=>null}
+            renderComposer={() => null}
+            minInputToolbarHeight={0}
           />
           :
           <Text>You do not have any message.</Text>
