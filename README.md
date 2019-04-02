@@ -4,7 +4,7 @@ Front-end: React Native + Native Base + Expo
 
 Back-end: Nodejs + Expressjs + MongoDB + Redis
 
-**Also see back-end server repository: https://github.com/eric19960304/FYP-Server**
+**Also see back-end server repository: https://github.com/eric19960304/Ridesharing-App-For-HK-Back-End**
 
 <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/1.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/2.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/3.jpg" width="270">
 
@@ -26,7 +26,7 @@ Back-end: Nodejs + Expressjs + MongoDB + Redis
 
 4. modify the content of `serverURL` in `config.js` file, to the local/public IP address of the machine this server to be running on
 
-5. Setup all back-end services described at https://github.com/eric19960304/FYP-Server
+5. Setup all back-end services described at https://github.com/eric19960304/Ridesharing-App-For-HK-Back-End
 
 
 
