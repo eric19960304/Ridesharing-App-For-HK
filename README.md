@@ -1,4 +1,4 @@
-**HKUCS FYP Ridesharing App**
+**HKUCS FYP Ride-sharing App For Hong Kong**
 
 Front-end: React Native + Native Base + Expo
 
@@ -26,13 +26,18 @@ Prerequisite:
 
 4. modify the content of `serverURL` in `config.js` file, to the local/public IP address of the machine this server to be running on
 
+5. Setup all back-end services described at https://github.com/eric19960304/FYP-Server
 
-Install packages (under project's root directory):
+
+
+Install npm packages (under project's root directory):
 
 `yarn`
 
 
-Run the project:
+To start the Expo-cli development tool:
 
 `yarn start`
 
+
+Follow the instruction of the Expo-cli to start the App in your smartphone.
