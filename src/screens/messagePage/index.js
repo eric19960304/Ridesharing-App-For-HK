@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Container, Header, Title, Button,
-  Icon, Left, Right, Body, Toast, Text
+  Icon, Left, Right, Body, Text
 } from "native-base";
 
 import styles from "./styles";
@@ -9,6 +9,7 @@ import SocketIOClient from 'socket.io-client';
 import { GiftedChat } from 'react-native-gifted-chat';
 import StorageManager from "../../helpers/storageManager";
 import config from '../../../config';
+import logoSmall from '../../../assets/nblogo.png';
 
 const storageManager = StorageManager.getInstance();
 
@@ -17,15 +18,15 @@ class MessagePage extends React.Component {
   constructor(props) {
     super(props);
 
-    const userId = storageManager.get('user').userId;
-
     this.state = {
       messages: [],
-      userId: { _id: userId }
+      user: { _id: 1 }
     };
 
+    
+    this.userId = storageManager.get('user').userId;
     this.socket = SocketIOClient(config.serverURL);
-    this.socket.emit('userJoined', { 'userId': userId });
+    this.socket.emit('userJoined', { 'userId': this.userId });
     this.socket.on('message', this.storeMessages);
   }
 
@@ -36,15 +37,17 @@ class MessagePage extends React.Component {
   }
 
   componentDidFocus = (payload)=>{
-    const userId = storageManager.get('user').userId;
-    this.socket.emit('userClearUnread', { 'userId': userId });
+    this.socket.emit('userClearUnread', { 'userId': this.userId });
+  }
+
+  componentWillUnmount(){
+    this.socket.emit('userLeft', { 'userId': this.userId });
   }
 
   render() {
     // Creating the socket-client instance will automatically connect to the server.
     
-    const { userId, messages } = this.state;
-
+    const { user, messages } = this.state;
 
     return (
       <Container>
@@ -67,7 +70,7 @@ class MessagePage extends React.Component {
           messages.length > 0 ?
           <GiftedChat
             messages={messages}
-            user={userId}
+            user={user}
             renderInputToolbar={()=>null}
             renderComposer={() => null}
             minInputToolbarHeight={0}
@@ -106,8 +109,13 @@ class MessagePage extends React.Component {
     //   duration: 3000
     // });
 
+    const _messages = messages.map(m=> {
+      m.user.avatar = logoSmall;
+      return m;
+    });
+
     this.setState( (prevState) => ({
-      messages: GiftedChat.append(prevState.messages, messages)
+      messages: GiftedChat.append(prevState.messages, _messages)
     }));
   }
 

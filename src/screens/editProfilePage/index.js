@@ -36,12 +36,8 @@ class EditProfilePage extends Component {
       contact: user.contact,
     };
     
-    this.onFormSubmit = this.onFormSubmit.bind(this);
   }
 
-
-
- 
   render() {
     const { avatarSource, email, nickname, password, newPassword, confirmPassword,isDriver,carplate,contact } = this.state;
     // const user = storageManager.get('user');
@@ -193,8 +189,8 @@ class EditProfilePage extends Component {
     
   }
 
-  async onFormSubmit(){
-    const { avatarSource, email, nickname, password, newPassword, confirmPassword, isDriver, carplate } = this.state;
+  onFormSubmit = () => {
+    const { email, nickname, password, newPassword, confirmPassword, isDriver, carplate } = this.state;
     let errorMessage = null;
     if(email.length === 0){
       errorMessage = "Please enter your email.";
@@ -208,7 +204,6 @@ class EditProfilePage extends Component {
     }
 
     let body = {};
-    let response = null;
 
     if(password.length === 0 && newPassword.length === 0 && confirmPassword.length === 0){
       // not update password
@@ -244,7 +239,7 @@ class EditProfilePage extends Component {
       networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile', 
         body,
-        ()=>{}
+        (data)=>{ this.handleResponse(data) }
       );
       
     }else{
@@ -289,11 +284,14 @@ class EditProfilePage extends Component {
       networkClient.POSTWithJWT(
         config.serverURL + '/api/user/edit-profile-with-password', 
         body,
-        ()=>{}
+        (data)=>{ this.handleResponse(data) }
       );
     
     }
-  
+
+  } // end of onFormSubmit
+
+  handleResponse = (response) => {
     // check return value from backend
     const successMessage = "Profile Update successful!";
     const failMessage = 'something go wrong, please try again later!';
@@ -328,8 +326,7 @@ class EditProfilePage extends Component {
         position: "top",
       });
     }
-
-  } // end of onFormSubmit
+  }
 
 }
 

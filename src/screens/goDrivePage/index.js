@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Location } from "expo";
 import {
-  View, Dimensions,
+  View, Dimensions
 } from 'react-native';
 import {
   Container, Header, Title, Content, Button,
@@ -12,6 +12,7 @@ import StorageManager from "../../helpers/storageManager";
 import MapView, { Marker } from 'react-native-maps';
 import styles from './styles';
 import networkClient from "../../helpers/networkClient";
+import MapViewDirections from 'react-native-maps-directions';
 import config from "../../../config";
 
 const storageManager = StorageManager.getInstance();
@@ -32,8 +33,9 @@ class GoDrivePage extends Component {
     super(props);
 
     this.state = {
-      loading: false,
-      onGoingRideDetails: null
+      loading: true,
+      rideRequests: null,
+      GOOGLE_MAP_API_KEY: null
     };
 
     this.mapView = null;
@@ -55,6 +57,21 @@ class GoDrivePage extends Component {
       return;
     };
 
+    networkClient.POSTWithJWT(
+      config.serverURL + '/api/secret/google-map-api-key', 
+      {},
+      (data)=>{
+        if(!data) return;
+
+        if(data.googleMapApiKey){
+          this.setState({
+            GOOGLE_MAP_API_KEY: data.googleMapApiKey,
+            loading: false
+          });
+        }
+      }
+    );
+
     Location.getProviderStatusAsync()
     .then((result)=>{
       if(result.locationServicesEnabled){
@@ -73,6 +90,29 @@ class GoDrivePage extends Component {
   render() {
     const { width, height } = Dimensions.get('window');
     this.user = storageManager.get('user');
+
+    const { rideRequests, GOOGLE_MAP_API_KEY } = this.state;
+    const colors = [];
+    
+    if(rideRequests){
+      rideRequests.forEach( _ =>{
+        colors.push(this.randomColor());
+      });
+    }
+    
+    const startPoints = [];
+    if(rideRequests){
+      rideRequests.forEach( (q) =>{
+        startPoints.push(q.startLocation);
+      });
+    }
+
+    const endPoints = [];
+    if(rideRequests){
+      rideRequests.forEach( (q) =>{
+        endPoints.push(q.endLocation);
+      });
+    }
 
     if(!this.user.isDriver){
       return(
@@ -160,19 +200,51 @@ class GoDrivePage extends Component {
         </Header>
 
         <Content scrollEnabled={false}>
-          <View style={{ width, height }}>
+          <View style={{ width, height: height }}>
 
             <MapView 
               initialRegion={initialCoordinates} 
               style={styles.map} 
-              scrollEnabled={false}
+              scrollEnabled={true}
               showsUserLocation={true}
-              onUserLocationChange={(event) => this.userLocationChanged(event)}
-              onRegionChange={this.regionChanged}
-              followsUserLocation={true}
-              showsMyLocationButton={true}
+              onMapReady={ this.moveToUserLocation }
               ref={c => this.mapView = c}
             >
+
+              { rideRequests && rideRequests.length > 0 &&
+                rideRequests.map( (req, idx) => (
+                  <MapViewDirections
+                    key={idx}
+                    origin={req.startLocation}
+                    destination={req.endLocation}
+                    apikey={GOOGLE_MAP_API_KEY}
+                    strokeWidth={3}
+                    strokeColor={colors[idx]}
+                  />
+                ))
+              }
+
+              {startPoints.map( (p, idx) => (
+                <Marker
+                  key={idx}
+                  coordinate={p}
+                  pinColor={colors[idx]}
+                />
+              ))}
+
+              {endPoints.map( (p, idx) => (
+                <Marker
+                  key={idx}
+                  coordinate={p}
+                  pinColor={colors[idx]}
+                >
+                  <Icon
+                    type="FontAwesome"
+                    name="flag"
+                    style={{ width: 40, color: colors[idx] }}
+                  />
+                </Marker>
+              ))}
 
             </MapView>
             
@@ -182,29 +254,27 @@ class GoDrivePage extends Component {
     );
   } // end of render
 
-  userLocationChanged = (event) => {
-    const newRegion = event.nativeEvent.coordinate;
-
-    this.displayRegion = {
-      ...this.displayRegion,
-      latitude: newRegion.latitude,
-      longitude: newRegion.longitude
+  moveToUserLocation = async () => {
+    let location = await Location.getCurrentPositionAsync({});
+    const coordinates = {
+      latitude: location.coords.latitude, 
+      longitude: location.coords.longitude,
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.05 * ratio,
     };
 
     if(this.mapView) {
-      this.mapView.animateToRegion(
-        this.displayRegion, 
-        1000
-      );
+      this.mapView.animateToRegion(coordinates, 1000);
     }
   }
 
-  regionChanged = (event) => {
-    this.displayRegion = {
-        ...this.displayRegion,
-        longitudeDelta: event.longitudeDelta,
-        latitudeDelta: event.latitudeDelta,
+  randomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
     }
+    return color;
   }
 
   displayLocationNotEnabledWarning = ()=>{
@@ -232,17 +302,17 @@ class GoDrivePage extends Component {
   };
 
   sendLocationToServer = async (data) => {
-    const { onGoingRideDetails } = this.state;
+    const { rideRequests } = this.state;
     const url = config.serverURL + '/api/driver/update';
     const body ={
       location: data.coords,
       timestamp: (new Date()).getTime(),
     };
     networkClient.POSTWithJWT(url, body, (response)=>{
-      if( response && (!onGoingRideDetails || onGoingRideDetails.length !== response.length) ){
+      if( response && (!rideRequests || rideRequests.length !== response.length) ){
         // has new matched ride request
         this.setState({
-          onGoingRideDetails: response
+          rideRequests: response
         });
       }
     });

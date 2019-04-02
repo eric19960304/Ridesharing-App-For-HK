@@ -49,7 +49,7 @@ class SideBar extends Component {
 
   componentWillMount(){
     this.updateUnreadMessagesCount();
-    this._updateMessageCountWorker = setInterval(this.updateUnreadMessagesCount, 5000);
+    this._updateMessageCountWorker = setInterval(this.updateUnreadMessagesCount, 2000);
   }
 
   componentWillUnmount(){

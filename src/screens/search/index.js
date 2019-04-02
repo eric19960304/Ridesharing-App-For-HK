@@ -36,7 +36,7 @@ const coordinates = {
   latitudeDelta: 0.5,
   longitudeDelta: 0.5 * ratio,
 };
-let markerId = 0;
+
 class Search extends Component {
 
   constructor(props) {
@@ -57,6 +57,8 @@ class Search extends Component {
     }
 
     this.mapView = null;
+    this.markerId = 0;
+    this.dirKey = 0;
   }
 
   componentWillMount() {
@@ -107,7 +109,7 @@ class Search extends Component {
   render() {
 
     const { width, height } = Dimensions.get('window');
-    const { GOOGLE_MAP_API_KEY, isMoveWithUser } = this.state;
+    const { GOOGLE_MAP_API_KEY } = this.state;
 
     const numberOfMarkers = this.state.markers.length;
     
@@ -169,13 +171,31 @@ class Search extends Component {
               ref={c => this.mapView = c}
             >
 
-              {this.state.markers.map(marker => (
-                <Marker
-                  key={marker.key}
-                  coordinate={marker.coordinate}
-                  pinColor={marker.color}
-                />
-              ))}
+              {this.state.markers.map( (marker, idx) => {
+                if(idx===0){
+                  return (
+                    <Marker
+                      key={marker.key}
+                      coordinate={marker.coordinate}
+                      pinColor={marker.color}
+                    />
+                  )
+                }else{
+                  return (
+                    <Marker
+                      key={marker.key}
+                      coordinate={marker.coordinate}
+                      pinColor={marker.color}
+                    >
+                      <Icon
+                        type="FontAwesome"
+                        name="flag"
+                        style={{ width: 40, color: marker.color }}
+                      />
+                    </Marker>
+                  )
+                }
+              })}
 
 
               {this.state.drivers.map( (driver, idx) => {
@@ -196,11 +216,12 @@ class Search extends Component {
 
               {numberOfMarkers == 2 &&
                 <MapViewDirections
+                  key={this.dirKey++}
                   origin={this.state.markers[0].coordinate}
                   destination={this.state.markers[1].coordinate}
                   apikey={GOOGLE_MAP_API_KEY}
                   strokeWidth={3}
-                  strokeColor="#1E90FF"
+                  strokeColor={this.randomColor()}
                   // // I think not zoom to the user selected pickup and drop off point is better for UX
                   // onReady={(result) => {
                   //   this.mapView.fitToCoordinates(result.coordinates, {
@@ -340,7 +361,7 @@ class Search extends Component {
           ...this.state.markers,
           {
             coordinate: e.nativeEvent.coordinate,
-            key: markerId++,
+            key: this.markerId++,
             color: this.randomColor(),
           },
         ],
@@ -358,7 +379,7 @@ class Search extends Component {
     this.setState({ 
       markers: [], 
     });
-    markerId = 0;
+    this.markerId = 0;
   }
 
   randomColor = () => {
