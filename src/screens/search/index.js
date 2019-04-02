@@ -59,6 +59,7 @@ class Search extends Component {
     this.mapView = null;
     this.markerId = 0;
     this.dirKey = 0;
+    this.pathColor = this.randomColor();
   }
 
   componentWillMount() {
@@ -177,7 +178,7 @@ class Search extends Component {
                     <Marker
                       key={marker.key}
                       coordinate={marker.coordinate}
-                      pinColor={marker.color}
+                      pinColor={this.pathColor}
                     />
                   )
                 }else{
@@ -185,12 +186,12 @@ class Search extends Component {
                     <Marker
                       key={marker.key}
                       coordinate={marker.coordinate}
-                      pinColor={marker.color}
+                      pinColor={this.pathColor}
                     >
                       <Icon
                         type="FontAwesome"
                         name="flag"
-                        style={{ width: 40, color: marker.color }}
+                        style={{ width: 40, color: this.pathColor }}
                       />
                     </Marker>
                   )
@@ -221,7 +222,7 @@ class Search extends Component {
                   destination={this.state.markers[1].coordinate}
                   apikey={GOOGLE_MAP_API_KEY}
                   strokeWidth={3}
-                  strokeColor={this.randomColor()}
+                  strokeColor={this.pathColor}
                   // // I think not zoom to the user selected pickup and drop off point is better for UX
                   // onReady={(result) => {
                   //   this.mapView.fitToCoordinates(result.coordinates, {
@@ -310,7 +311,7 @@ class Search extends Component {
   }
   submitRideRequest = (distance_duration) => {
     const { markers } = this.state;
-    this.resetMarker();
+    
     const estimatedOptimal = {
       distance: distance_duration[0],
       duration: distance_duration[1],
@@ -335,6 +336,8 @@ class Search extends Component {
         });
       }
     );
+
+    this.resetMarker();
   }
 
   changeMapRegion = (data, details) => {
@@ -356,15 +359,16 @@ class Search extends Component {
     const numberOfMarkers = this.state.markers.length;
 
     if( numberOfMarkers <= 1){
+
+      let newMarkers = JSON.parse(JSON.stringify(this.state.markers));
+      newMarkers.push({
+        coordinate: e.nativeEvent.coordinate,
+        key: this.markerId++,
+        color: this.randomColor(),
+      });
+
       this.setState({
-        markers: [
-          ...this.state.markers,
-          {
-            coordinate: e.nativeEvent.coordinate,
-            key: this.markerId++,
-            color: this.randomColor(),
-          },
-        ],
+        markers: newMarkers
       });
 
       if(numberOfMarkers == 1){
@@ -380,6 +384,7 @@ class Search extends Component {
       markers: [], 
     });
     this.markerId = 0;
+    this.pathColor = this.randomColor();
   }
 
   randomColor = () => {
