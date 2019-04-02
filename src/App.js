@@ -64,7 +64,7 @@ export default class App extends Component {
       textStyle: { textAlign: 'center' },
       type: "success",
       position: "top",
-      duration: 3000,
+      duration: 8000,
     });
   };
 
