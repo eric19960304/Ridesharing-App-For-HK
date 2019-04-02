@@ -1,10 +1,10 @@
-**HKUCS FYP Ride-sharing App For Hong Kong**
+# HKUCS FYP Ride-sharing App For Hong Kong
 
 Front-end: React Native + Native Base + Expo
 
 Back-end: Nodejs + Expressjs + MongoDB + Redis
 
-Also see back-end server repository: https://github.com/eric19960304/FYP-Server
+**Also see back-end server repository: https://github.com/eric19960304/FYP-Server**
 
 <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/1.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/2.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/3.jpg" width="270">
 
@@ -16,7 +16,7 @@ Also see back-end server repository: https://github.com/eric19960304/FYP-Server
 
 
 
-Prerequisite:
+**Prerequisite:**
 
 1. Nodejs v8.x.x installed (npm command avaliable)
 
@@ -30,14 +30,14 @@ Prerequisite:
 
 
 
-Install npm packages (under project's root directory):
+**Install npm packages (under project's root directory):**
 
 `yarn`
 
 
-To start the Expo-cli development tool:
+**To start the Expo-cli development tool:**
 
 `yarn start`
 
 
-Follow the instruction of the Expo-cli to start the App in your smartphone.
+**Then follow the instruction of the Expo-cli to start the App in your smartphone.**
