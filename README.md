@@ -1,6 +1,19 @@
 **HKUCS FYP Ridesharing App**
 
-Also see the Back-end server repository: https://github.com/eric19960304/FYP-Server
+Front-end: React Native + Native Base + Expo
+
+Back-end: Nodejs + Expressjs + MongoDB + Redis
+
+Also see back-end server repository: https://github.com/eric19960304/FYP-Server
+
+<img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/1.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/2.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/3.jpg" width="270">
+
+
+<img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/4.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/5.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/6.jpg" width="270">
+
+
+<img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/7.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/8.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/9.jpg" width="270">
+
 
 
 Prerequisite:
