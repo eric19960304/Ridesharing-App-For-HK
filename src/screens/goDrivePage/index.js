@@ -34,7 +34,8 @@ class GoDrivePage extends Component {
 
     this.state = {
       loading: true,
-      rideRequests: null,
+      rideRequests: [],
+      matchedRideRequests: [],
       GOOGLE_MAP_API_KEY: null
     };
 
@@ -91,25 +92,32 @@ class GoDrivePage extends Component {
     const { width, height } = Dimensions.get('window');
     this.user = storageManager.get('user');
 
-    const { rideRequests, GOOGLE_MAP_API_KEY } = this.state;
+    const { rideRequests, matchedRideRequests, GOOGLE_MAP_API_KEY } = this.state;
     const colors = [];
+
+    let rideRequestsToDisplay;
+    if(matchedRideRequests.length > 0){
+      rideRequestsToDisplay = matchedRideRequests;
+    }else{
+      rideRequestsToDisplay = rideRequests;
+    }
     
-    if(rideRequests){
-      rideRequests.forEach( _ =>{
+    if(rideRequestsToDisplay){
+      rideRequestsToDisplay.forEach( _ =>{
         colors.push(this.randomColor());
       });
     }
     
     const startPoints = [];
-    if(rideRequests){
-      rideRequests.forEach( (q) =>{
+    if(rideRequestsToDisplay){
+      rideRequestsToDisplay.forEach( (q) =>{
         startPoints.push(q.startLocation);
       });
     }
 
     const endPoints = [];
-    if(rideRequests){
-      rideRequests.forEach( (q) =>{
+    if(rideRequestsToDisplay){
+      rideRequestsToDisplay.forEach( (q) =>{
         endPoints.push(q.endLocation);
       });
     }
@@ -211,8 +219,8 @@ class GoDrivePage extends Component {
               ref={c => this.mapView = c}
             >
 
-              { rideRequests && rideRequests.length > 0 &&
-                rideRequests.map( (req, idx) => (
+              { rideRequestsToDisplay.length > 0 &&
+                rideRequestsToDisplay.map( (req, idx) => (
                   <MapViewDirections
                     key={idx}
                     origin={req.startLocation}
@@ -302,17 +310,20 @@ class GoDrivePage extends Component {
   };
 
   sendLocationToServer = async (data) => {
-    const { rideRequests } = this.state;
+    const { rideRequests, matchedRideRequests } = this.state;
     const url = config.serverURL + '/api/driver/update';
     const body ={
       location: data.coords,
       timestamp: (new Date()).getTime(),
     };
     networkClient.POSTWithJWT(url, body, (response)=>{
-      if( response && (!rideRequests || rideRequests.length !== response.length) ){
+      if( response && 
+        (rideRequests.length !== response.allRideRequests.length ||
+         matchedRideRequests.length !== response.onGoingRides.length) ){
         // has new matched ride request
         this.setState({
-          rideRequests: response
+          rideRequests: response.allRideRequests,
+          matchedRideRequests: response.onGoingRides
         });
       }
     });
