@@ -31,7 +31,7 @@ const datas = [
     unreadMessagesCount: null,
   },
   {
-    name: "Setting",
+    name: "Settings",
     route: "SettingPage",
     icon: "cog",
   },

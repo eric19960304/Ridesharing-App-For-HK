@@ -31,7 +31,7 @@ class SettingPage extends Component {
             </Button>
           </Left>
           <Body>
-            <Title>Setting</Title>
+            <Title>Settings</Title>
           </Body>
           <Right />
         </Header>
