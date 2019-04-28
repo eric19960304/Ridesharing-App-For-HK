@@ -98,13 +98,21 @@ class Search extends Component {
       if(data===undefined) return;
 
       if(data.matchedDriver){
-        const newDrivers = [data.matchedDriver];
+        // has a matched driver
+        const newDrivers = [data.matchedDriver].map( (driverLocation, idx) =>{
+          return {
+            key: 'driver' + idx,
+            coordinate: driverLocation.location
+          };
+        });;
+
         this.setState({ 
           drivers: newDrivers,
           isSearching: data.isSearching,
         });
 
       }else if(data.allDrivers && data.allDrivers.length>0){
+        // has some online drivers
         const drivers = data.allDrivers;
         const newDrivers = drivers.map( (driverLocation, idx) =>{
           return {
@@ -117,7 +125,9 @@ class Search extends Component {
           isSearching: data.isSearching,
         });
       }else{
+        // no drivers at all
         this.setState({ 
+          drivers: [],
           isSearching: data.isSearching,
         });
       }
