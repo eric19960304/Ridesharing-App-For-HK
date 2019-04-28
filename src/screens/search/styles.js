@@ -27,18 +27,12 @@ export default {
     top: 70,
     left: 10
   },
-  bubble: {
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20,
-  },
   viewContainer:{
     flex: 1
   },
   searchBar: { 
     textInputContainer: {
-      width: '100%'
+      width: '100%',
     },
     listView: {
       backgroundColor: 'white',
@@ -46,5 +40,38 @@ export default {
     description: {
       fontWeight: 'bold',
     },
-  }
+  },
+  bubbleButtonContainer: {
+    flexDirection: 'row',
+    marginVertical: 30,
+    marginHorizontal: 100,
+    backgroundColor: 'transparent',
+  },
+  bubble: {
+    backgroundColor: 'rgba(250, 10, 10, 0.80)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
+  },
+  bubbleButton: {
+    width: 150,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 20
+  },
+  centerGroup: { 
+    marginBottom: 80,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  contentContainer: { 
+    flexDirection: "column", 
+    alignItems: "center"
+  },
 };

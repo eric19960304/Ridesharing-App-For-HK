@@ -4,6 +4,7 @@ import {
   Dimensions,
   Image,
   Alert,
+  TouchableOpacity
 } from 'react-native';
 import {
   Container, Header, Title, Content, Text, Button,
@@ -48,6 +49,7 @@ class Search extends Component {
       drivers: [],
       mapRegion: null,
       GOOGLE_MAP_API_KEY: null,
+      isSearching: false,
     };
 
     this.displayRegion = {
@@ -59,7 +61,7 @@ class Search extends Component {
     this.mapView = null;
     this.markerId = 0;
     this.dirKey = 0;
-    this.pathColor = this.randomColor();
+    this.pathColor = '#091fc6';
   }
 
   componentWillMount() {
@@ -92,25 +94,41 @@ class Search extends Component {
 
     const url = config.serverURL + '/api/driver/get-all-drivers-location';
     const body = {};
-    networkClient.POSTWithJWT(url, body, (locationList)=>{
-      if(locationList===undefined) return;
+    networkClient.POSTWithJWT(url, body, (data)=>{
+      if(data===undefined) return;
 
-      const newDrivers = locationList.map( (driverLocation, idx) =>{
-        return {
-          key: 'driver' + idx,
-          coordinate: driverLocation.location
-        };
-      });
-  
-      this.setState({ drivers: newDrivers });
+      if(data.matchedDriver){
+        const newDrivers = [data.matchedDriver];
+        this.setState({ 
+          drivers: newDrivers,
+          isSearching: data.isSearching,
+        });
+
+      }else if(data.allDrivers && data.allDrivers.length>0){
+        const drivers = data.allDrivers;
+        const newDrivers = drivers.map( (driverLocation, idx) =>{
+          return {
+            key: 'driver' + idx,
+            coordinate: driverLocation.location
+          };
+        });
+        this.setState({ 
+          drivers: newDrivers,
+          isSearching: data.isSearching,
+        });
+      }else{
+        this.setState({ 
+          isSearching: data.isSearching,
+        });
+      }
+      
     });
     
   }
 
   render() {
-
     const { width, height } = Dimensions.get('window');
-    const { GOOGLE_MAP_API_KEY } = this.state;
+    const { GOOGLE_MAP_API_KEY, isSearching } = this.state;
 
     const numberOfMarkers = this.state.markers.length;
     
@@ -202,7 +220,7 @@ class Search extends Component {
               {this.state.drivers.map( (driver, idx) => {
                   return (
                   <Marker
-                    key={driver.key}
+                    key={idx}
                     coordinate={driver.coordinate}
                     style={{ width: 50, height: 50 }}
                   >
@@ -239,42 +257,59 @@ class Search extends Component {
               
             </MapView>
 
-                <GooglePlacesAutocomplete
-                  placeholder='Search'
-                  minLength={2} // minimum length of text to search
-                  autoFocus={false}
-                  returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-                  listViewDisplayed={false}   // true/false/undefined
-                  fetchDetails={true}
-                  renderDescription={row => row.description} // custom description render
-                  onPress={(data, details = null) => this.changeMapRegion(data, details)}
-                  editable={ numberOfMarkers == 2 ? false : true }
-                  getDefaultValue={() => ''}
-                  
-                  query={{
-                    // available options: https://developers.google.com/places/web-service/autocomplete
-                    key: GOOGLE_MAP_API_KEY,
-                    language: 'en', // language of the results
-                    // secondary_text: 'Hong Kong'
-                    // types: 'HK' // default: 'geocode'
-                    components: 'country:hk'
-                  }}
-                  
-                  styles={styles.searchBar}
-                  
-                  // currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
-                  // currentLocationLabel="Current location"
-                  // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-                  // predefinedPlaces={[homePlace, workPlace]}
+            <GooglePlacesAutocomplete
+              placeholder='Search'
+              minLength={2} // minimum length of text to search
+              autoFocus={false}
+              returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+              listViewDisplayed={false}   // true/false/undefined
+              fetchDetails={true}
+              renderDescription={row => row.description} // custom description render
+              onPress={(data, details = null) => this.changeMapRegion(data, details)}
+              editable={ numberOfMarkers == 2 ? false : true }
+              getDefaultValue={() => ''}
+              
+              query={{
+                // available options: https://developers.google.com/places/web-service/autocomplete
+                key: GOOGLE_MAP_API_KEY,
+                language: 'en', // language of the results
+                // secondary_text: 'Hong Kong'
+                // types: 'HK' // default: 'geocode'
+                components: 'country:hk'
+              }}
+              
+              styles={styles.searchBar}
+              
+              // currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
+              // currentLocationLabel="Current location"
+              // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+              // predefinedPlaces={[homePlace, workPlace]}
 
-                  debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-                  // renderLeftButton={
-                  //   ()  => numberOfMarkers == 0 && <Text>Start point</Text> 
-                  //   || numberOfMarkers == 1 && <Text>End point</Text>
-                  // }
+              debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+              // renderLeftButton={
+              //   ()  => numberOfMarkers == 0 && <Text>Start point</Text> 
+              //   || numberOfMarkers == 1 && <Text>End point</Text>
+              // }
 
-                  ref={(instance) => { this.GooglePlacesRef = instance }}
-                />
+              ref={(instance) => { this.GooglePlacesRef = instance }}
+            />
+
+            { isSearching?
+              <View style={styles.contentContainer}>
+                <View style={styles.centerGroup}>
+                  <View style={styles.bubbleButtonContainer}>
+                    <TouchableOpacity
+                      style={[styles.bubble, styles.bubbleButton]}
+                    >
+                      <Text style={styles.buttonText}>Searching...</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              :
+              null
+            }
+            
 
           </View>
           
@@ -310,7 +345,7 @@ class Search extends Component {
    
   }
   submitRideRequest = (distance_duration) => {
-    const { markers } = this.state;
+    const { markers, isSearching } = this.state;
     
     const estimatedOptimal = {
       distance: distance_duration[0],
@@ -332,8 +367,9 @@ class Search extends Component {
           textStyle: { textAlign: 'center' },
           type: "success",
           position: "top",
-          duration: 5000,
+          duration: 6000,
         });
+        this.getDriverLocation();
       }
     );
 
@@ -357,14 +393,15 @@ class Search extends Component {
   
   onMapPress = (e) => {
     const numberOfMarkers = this.state.markers.length;
+    const {isSearching} = this.state;
 
-    if( numberOfMarkers <= 1){
+    if( numberOfMarkers <= 1 && !isSearching){
 
       let newMarkers = JSON.parse(JSON.stringify(this.state.markers));
       newMarkers.push({
         coordinate: e.nativeEvent.coordinate,
         key: this.markerId++,
-        color: this.randomColor(),
+        color: this.pathColor,
       });
 
       this.setState({
@@ -374,7 +411,7 @@ class Search extends Component {
       if(numberOfMarkers == 1){
         setTimeout(()=>{
           this.alert();
-        }, 1500);
+        }, 2000);
       }
     }
   }
@@ -384,17 +421,16 @@ class Search extends Component {
       markers: [], 
     });
     this.markerId = 0;
-    this.pathColor = this.randomColor();
   }
 
-  randomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }
+  // randomColor = () => {
+  //   const letters = '0123456789ABCDEF';
+  //   let color = '#';
+  //   for (let i = 0; i < 6; i++) {
+  //     color += letters[Math.floor(Math.random() * 16)];
+  //   }
+  //   return color;
+  // }
 
   moveToUserLocation = async () => {
     let location = await Location.getCurrentPositionAsync({});

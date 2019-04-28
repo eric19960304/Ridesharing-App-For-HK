@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Location } from "expo";
 import {
-  View, Dimensions
+  View, Dimensions, TouchableOpacity
 } from 'react-native';
 import {
   Container, Header, Title, Content, Button,
@@ -103,9 +103,9 @@ class GoDrivePage extends Component {
     }
     
     if(rideRequestsToDisplay){
-      rideRequestsToDisplay.forEach( _ =>{
-        colors.push(this.randomColor());
-      });
+      for(let i=0; i<rideRequestsToDisplay.length; i++){
+        colors.push(this.colorSeq(i*3));
+      }
     }
     
     const startPoints = [];
@@ -255,6 +255,18 @@ class GoDrivePage extends Component {
               ))}
 
             </MapView>
+
+            <View style={styles.contentContainer}>
+              <View style={styles.centerGroup}>
+                <View style={styles.bubbleButtonContainer}>
+                  <TouchableOpacity
+                    style={[styles.bubble, styles.bubbleButton]}
+                  >
+                    <Text style={styles.buttonText}>Passenger: {matchedRideRequests.length}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
             
           </View>
         </Content>
@@ -276,13 +288,16 @@ class GoDrivePage extends Component {
     }
   }
 
-  randomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+  colorSeq = (randSeed) => {
+    // generate dark color
+    let color = [];
+    let k = randSeed;
+    for (let i = 0; i < 3; i++) {
+      const digits = Math.floor(Math.abs(Math.sin(k++) * 10000))%128+1;
+      color.push(digits);
     }
-    return color;
+
+    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
   }
 
   displayLocationNotEnabledWarning = ()=>{

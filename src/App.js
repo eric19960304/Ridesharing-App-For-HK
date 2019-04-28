@@ -45,7 +45,21 @@ const stackPages = {
 export default class App extends Component {
 
   constructor(props){
+
     super(props);
+
+    const user = storageManager.get('user');
+
+    const AppNavigator = createStackNavigator(
+      stackPages,
+      {
+        initialRouteName: user ? "Drawer" : "WelcomePage",
+        headerMode: "none"
+      }
+    );
+
+    this.AppContainer = createAppContainer(AppNavigator);
+    
   }
 
   componentDidMount() {
@@ -64,27 +78,16 @@ export default class App extends Component {
       textStyle: { textAlign: 'center' },
       type: "success",
       position: "top",
-      duration: 8000,
+      duration: 5000,
     });
   };
 
   render() {
-
-    const user = storageManager.get('user');
-
-    const AppNavigator = createStackNavigator(
-      stackPages,
-      {
-        initialRouteName: user ? "MessagePage" : "WelcomePage",
-        headerMode: "none"
-      }
-    );
-
-    const AppContainer = createAppContainer(AppNavigator);
+    const AppContainer = this.AppContainer;
 
     return (
       <Root>
-        <AppContainer />
+        <AppContainer/>
       </Root>
     )
   }
