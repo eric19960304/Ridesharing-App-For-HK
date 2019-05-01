@@ -6,6 +6,8 @@ Back-end: Nodejs + Expressjs + MongoDB + Redis
 
 **Also see back-end server repository: https://github.com/eric19960304/Ridesharing-App-For-HK-Back-End**
 
+**Project Homepage: https://i.cs.hku.hk/fyp/2018/fyp18028/**
+
 **Demo video on YouTube: https://www.youtube.com/watch?v=lWX9K4Xj9gU**
 
 <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/1.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/2.jpg" width="270"> <img src="https://raw.githubusercontent.com/eric19960304/Ridesharing-App-For-HK/master/assets/demo/3.jpg" width="270">
