@@ -28,7 +28,7 @@ Back-end: Nodejs + Expressjs + MongoDB + Redis
 
 3. Install yarn with version >=1.12.3 installed
 
-4. modify the content of `serverURL` in `config.js` file, to the local/public IP address of the machine this server to be running on
+4. modify the content of `serverURL` in `config.js` file, to the local/public IP address of the machine that this development server to be running on
 
 5. Setup all back-end services described at https://github.com/eric19960304/Ridesharing-App-For-HK-Back-End
 
