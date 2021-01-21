@@ -27,7 +27,7 @@
     "react-native-maps-directions": "~1.6.0",
     "react-native-switch": "^1.5.0",
     "react-navigation": "~3.0.9",
-    "socket.io": "~2.2.0"
+    "socket.io": "~2.4.0"
   },
   "devDependencies": {
     "babel-preset-expo": "~5.0.0",
